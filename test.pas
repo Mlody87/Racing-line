@@ -1,23 +1,13 @@
-pion*E2*E4*ruch#
-pion*F7*F5*ruch#
-pion*E4*E5*ruch#
-pion*D7*D5*ruch#
-pion*E5*D6*przelot*D5#
-pion*E7*E6*ruch#
-goniec*F1*D3*ruch#
-goniec*F8*E7*ruch#
-skoczek*G1*F3*ruch#
-skoczek*G8*F6*ruch#
-krol*E1*G1*roszada#
-krol*E8*G8*roszada#
-pion*D6*C7*ruch#
-pion*B7*B5*ruch#
-pion*C2*C4*ruch#
-pion*B5*B4*ruch#
-pion*A2*A4*ruch#
-pion*B4*A3*przelot*A4#
-pion*C7*D8*promocja*hetman#
+http://free-pascal-lazarus.989080.n3.nabble.com/Lazarus-Windows-DDE-td4034195.html
 
+http://freepascal.ru/forum/viewtopic.php?f=5&t=7365
+
+https://msdn.microsoft.com/en-us/library/windows/desktop/ff468832(v=vs.85).aspx
+
+
+http://www.delphipraxis.net/84293-dde-clientitem-onchange-ddeclientitemchange.html
+
+https://groups.google.com/forum/?hl=de#!topic/borland.public.delphi.vcl.components.using/yB7oQqyYhk0
 
 unit partia;
 
