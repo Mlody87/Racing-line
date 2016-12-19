@@ -1,13 +1,7 @@
-http://free-pascal-lazarus.989080.n3.nabble.com/Lazarus-Windows-DDE-td4034195.html
-
-http://freepascal.ru/forum/viewtopic.php?f=5&t=7365
-
-https://msdn.microsoft.com/en-us/library/windows/desktop/ff468832(v=vs.85).aspx
+http://stackoverflow.com/questions/34288795/delphi-7-dde-callback-on-windows-7-64-bits
 
 
-http://www.delphipraxis.net/84293-dde-clientitem-onchange-ddeclientitemchange.html
-
-https://groups.google.com/forum/?hl=de#!topic/borland.public.delphi.vcl.components.using/yB7oQqyYhk0
+http://stackoverflow.com/questions/33498797/how-to-implement-return-codes-in-ddecallback-function
 
 unit partia;
 
