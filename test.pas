@@ -85,6 +85,7 @@ type
   
   TPiece = record
   Piece:integer;
+  Color:string;
   Image:TPortableNetworkGraphic;
   MoveCount:integer;
   Field:string;
@@ -103,7 +104,7 @@ type
     ('A3','B3','C3','D3','E3','F3','G3','H3'),
     ('A2','B2','C2','D2','E2','F2','G2','H2'),
     ('A1','B1','C1','D1','E1','F1','G1','H1'));
-    Pieces : array[0..7] of string =
+    Pieces : array[0..5] of string =
     ('Pawn', 'Roock', 'Knight', 'Bishop', 'Queen', 'King');
     Board:array[0..7,0..7] of TPiece;
   protected
@@ -113,6 +114,7 @@ type
     function FieldSize():integer;
     procedure DrawBoard();
     procedure DrawLines();
+    procedure SetStartPosition();
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -220,6 +222,23 @@ Canvas.LineTo(0,Width-1);
 
 Canvas.MoveTo(0,Width-1);
 Canvas.LineTo(Width-1,Width-1);
+
+end;
+
+procedure TBoard.SetStartPosition();
+var
+i:integer;
+begin
+
+for i:=0 to 7 do
+begin
+  Board[0,0].Piece:=
+  Board[0,0].Color:=
+  Board[0,0].Image:=;
+  Board[0,0].MoveCount:=
+  Board[0,0].Field:=
+end;
+
 
 end;
 
