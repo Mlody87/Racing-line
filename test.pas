@@ -207,21 +207,21 @@ end;
 procedure TBoard.Paint();
 begin
 
-        Canvas.Pen.Color := clBlack;
+DrawBoard();
 
-        Canvas.MoveTo(0,0);
-        Canvas.LineTo(Width-1,0);
+Canvas.Pen.Color := clBlack;
 
-        Canvas.MoveTo(Width-1,0);
-        Canvas.LineTo(Width-1,Width-1);
+Canvas.MoveTo(0,0);
+Canvas.LineTo(Width-1,0);
 
-        Canvas.MoveTo(0,0);
-        Canvas.LineTo(0,Width-1);
+Canvas.MoveTo(Width-1,0);
+Canvas.LineTo(Width-1,Width-1);
 
-        Canvas.MoveTo(0,Width-1);
-        Canvas.LineTo(Width-1,Width-1);
+Canvas.MoveTo(0,0);
+Canvas.LineTo(0,Width-1);
 
-
+Canvas.MoveTo(0,Width-1);
+Canvas.LineTo(Width-1,Width-1);
 end;
 
 end.
