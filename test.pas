@@ -229,14 +229,15 @@ procedure TBoard.SetStartPosition();
 var
 i:integer;
 begin
-
+//set white Pawns
 for i:=0 to 7 do
 begin
-  Board[0,0].Piece:=
-  Board[0,0].Color:=
-  Board[0,0].Image:=;
-  Board[0,0].MoveCount:=
-  Board[0,0].Field:=
+  Board[7,i].Piece:=Pieces[0];
+  Board[7,i].Color:='black';
+  Board[7,i].Image:=TPortableNetworkGraphic.Create;
+  Board[7,i].Image:=LoadFromFile('img/'
+  Board[7,i].MoveCount:=0;
+  Board[7,i].Field:=
 end;
 
 
