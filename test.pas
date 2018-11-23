@@ -106,8 +106,8 @@ type
     ('A3','B3','C3','D3','E3','F3','G3','H3'),
     ('A2','B2','C2','D2','E2','F2','G2','H2'),
     ('A1','B1','C1','D1','E1','F1','G1','H1'));
-    Pieces : array[0..5] of string =
-    ('Pawn', 'Roock', 'Knight', 'Bishop', 'Queen', 'King');
+    Pieces : array[0..8] of string =
+    ('Pawn', 'Roock', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rock');
     Board:array[0..7,0..7] of TPiece;
   protected
     { Protected declarations }
@@ -244,17 +244,31 @@ begin
   Board[7,i].Height:=50;
 end;
 
+
 //set black Pawns
 for i:=0 to 7 do
 begin
-  Board[7,i].Piece:=Pieces[0];
-  Board[7,i].Color:='black';
-  Board[7,i].Image:=TPortableNetworkGraphic.Create;
-  Board[7,i].Image:=LoadFromFile('img/'+Pieces[0]+'Black.png');
-  Board[7,i].MoveCount:=0;
-  Board[7,i].Field:=BoardDesc[7,i];
-  Board[7,i].Width:=50;
-  Board[7,i].Height:=50;
+  Board[1,i].Piece:=Pieces[0];
+  Board[1,i].Color:='black';
+  Board[1,i].Image:=TPortableNetworkGraphic.Create;
+  Board[1,i].Image:=LoadFromFile('img/'+Pieces[0]+'Black.png');
+  Board[1,i].MoveCount:=0;
+  Board[1,i].Field:=BoardDesc[1,i];
+  Board[1,i].Width:=50;
+  Board[1,i].Height:=50;
+end;
+
+//set white Pices
+for i:=0 to 7 do
+begin
+  Board[8,i].Piece:=Pieces[i+1];
+  Board[8,i].Color:='white';
+  Board[8,i].Image:=TPortableNetworkGraphic.Create;
+  Board[8,i].Image:=LoadFromFile('img/'+Pieces[i+1]+'White.png');
+  Board[8,i].MoveCount:=0;
+  Board[8,i].Field:=BoardDesc[7,i];
+  Board[8,i].Width:=50;
+  Board[8,i].Height:=50;
 end;
 
 
