@@ -82,6 +82,13 @@ uses
 type
 
   TBoardDesc = array[0..7,0..7] of string;
+  
+  TPiece = record
+  Piece:integer;
+  Image:TPortableNetworkGraphic;
+  MoveCount:integer;
+  Field:string;
+  end;
 
   TBoard = class(TPaintBox)
   private
@@ -98,7 +105,7 @@ type
     ('A1','B1','C1','D1','E1','F1','G1','H1'));
     Pieces : array[0..7] of string =
     ('Pawn', 'Roock', 'Knight', 'Bishop', 'Queen', 'King');
-    Board:TBoardDesc;
+    Board:array[0..7,0..7] of TPiece;
   protected
     { Protected declarations }
     procedure Paint(); override;
