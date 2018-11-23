@@ -251,8 +251,10 @@ end;
 constructor TBoard.Create(AOwner : TComponent);
 begin
   inherited Create(AOwner);
-
-
+  
+  if (FBottomColor='black') then 
+      BoardDesc := BoardRotation(BoardDesc);
+  
 end;
 
 destructor TBoard.Destroy;
