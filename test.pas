@@ -136,59 +136,55 @@ end;
 procedure TBoard.DrawBoard();
 var
 iswhite:boolean;
-i:integer;
+i,j:integer;
 field:TRect;
 begin
+
 iswhite:=false;
+Canvas.Pen.Color := clWhite;
 
-   Canvas.Pen.Color := clWhite;
+for i:=0 to 7 do
+begin
 
-
-  for i:=0 to 7 do
+  if iswhite then
   begin
-
-            if iswhite then
-            begin
-                iswhite:=false;
-            end
-            else
-            begin
-                 iswhite:=true;
-            end;
-
-                      for j:=0 to 7 do
-                      begin
-
-                           field.Left:=(80*j);
-                           field.Top:=(80*i);
-                           field.Right:=(80*j)+81;
-                           field.Bottom:=(80*i)+81;
-
-                                                if iswhite then
-                                                begin
-                                                  Canvas.brush.Color := cl3DLight;
-                                                end
-                                                else
-                                                begin
-                                                  Canvas.brush.Color := clAppWorkspace;
-                                                 end;
-
-                            Canvas.rectangle(field);
-
-                            if white then
-                            begin
-                            white:=false;
-                            end
-                            else
-                            begin
-                            white:=true;
-                            end;
-
-
-                      end;
+     iswhite:=false;
+  end
+  else
+  begin
+     iswhite:=true;
   end;
 
+  for j:=0 to 7 do
+  begin
 
+     field.Left:=(80*j);
+     field.Top:=(80*i);
+     field.Right:=(80*j)+81;
+     field.Bottom:=(80*i)+81;
+
+     if iswhite then
+     begin
+       Canvas.brush.Color := cl3DLight;
+     end
+     else
+     begin
+       Canvas.brush.Color := clAppWorkspace;
+     end;
+
+     Canvas.rectangle(field);
+
+      if white then
+      begin
+         white:=false;
+      end
+      else
+      begin
+         white:=true;
+      end;
+      
+      end;
+   end;
 end;
 
 
