@@ -80,9 +80,6 @@ uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls;
 
 type
-
-  TBoardDesc = array[0..7,0..7] of string;
-  TPieces = array[0..8] of string;
   
   TPiece = record
   Piece:integer;
@@ -93,6 +90,10 @@ type
   Width:integer;
   Height:integer;
   end;
+  
+  TBoardDesc = array[0..7,0..7] of string;
+  TPieces = array[0..8] of string;
+  TBoardPieces = array[0..7,0..7] of TPiece;
 
   TBoard = class(TPaintBox)
   private
@@ -111,11 +112,12 @@ type
     ('Pawn', 'Roock', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rock');
     PiecesBlack : TPieces =
     ('Pawn', 'Roock', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rock');
-    Board:array[0..7,0..7] of TPiece;
+    Board:TBoardPieces;
   protected
     { Protected declarations }
     procedure Paint(); override;
     function BoardRotation(arr : TBoardDesc): TBoardDesc;
+    function BoardRotationPieces(arr : TBoardPieces): TBoardPieces;
     function FieldSize():integer;
     procedure DrawBoard();
     procedure DrawLines();
@@ -149,6 +151,20 @@ for X := 0 to 3 do
     Temp := arr[X, Y];
     BoardRotation[X, Y] := arr[7 - X, 7 - Y];
     BoardRotation[7 - X, 7 - Y] := Temp;
+  end;
+end;
+
+function BoardRotationPieces(arr : TBoardPieces): TBoardPieces;
+var
+X,Y:integer;
+Temp:TPiece;
+begin
+for X := 0 to 3 do
+  for Y := 0 to 7 do
+  begin
+    Temp := arr[X, Y];
+    BoardRotationPieces[X, Y] := arr[7 - X, 7 - Y];
+    BoardRotationPieces[7 - X, 7 - Y] := Temp;
   end;
 end;
 
@@ -285,8 +301,13 @@ constructor TBoard.Create(AOwner : TComponent);
 begin
   inherited Create(AOwner);
   
-  if (FBottomColor='black') then 
+  SetStartPosition();
+  
+  if (FBottomColor='black') then
+      begin
       BoardDesc := BoardRotation(BoardDesc);
+      Board := BoardRotationPieces(Board);
+      end;
   
 end;
 
