@@ -214,6 +214,7 @@ type
   protected
     { Protected declarations }
     procedure Paint(); override;
+    function BoardRotation(arr : TBoardDesc): TBoardDesc;
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -230,6 +231,20 @@ implementation
 procedure Register;
 begin
   RegisterComponents('Additional',[TBoard]);
+end;
+
+function TBoard.BoardRotation(arr : TBoardDesc): TBoardDesc;
+var
+X,Y:integer;
+Temp:string;
+begin
+for X := 0 to 3 do
+  for Y := 0 to 7 do
+  begin
+    Temp := arr[X, Y];
+    BoardRotation[X, Y] := arr[7 - X, 7 - Y];
+    BoardRotation[7 - X, 7 - Y] := Temp;
+  end;
 end;
 
 
