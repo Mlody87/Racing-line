@@ -233,11 +233,22 @@ begin
 for i:=0 to 7 do
 begin
   Board[7,i].Piece:=Pieces[0];
+  Board[7,i].Color:='white';
+  Board[7,i].Image:=TPortableNetworkGraphic.Create;
+  Board[7,i].Image:=LoadFromFile('img/'+Pieces[0]+'White.png');
+  Board[7,i].MoveCount:=0;
+  Board[7,i].Field:=BoardDesc[7,i];
+end;
+
+//set black Pawns
+for i:=0 to 7 do
+begin
+  Board[7,i].Piece:=Pieces[0];
   Board[7,i].Color:='black';
   Board[7,i].Image:=TPortableNetworkGraphic.Create;
-  Board[7,i].Image:=LoadFromFile('img/'
+  Board[7,i].Image:=LoadFromFile('img/'+Pieces[0]+'Black.png');
   Board[7,i].MoveCount:=0;
-  Board[7,i].Field:=
+  Board[7,i].Field:=BoardDesc[7,i];
 end;
 
 
