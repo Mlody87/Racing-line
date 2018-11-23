@@ -100,6 +100,7 @@ type
     { Protected declarations }
     procedure Paint(); override;
     function BoardRotation(arr : TBoardDesc): TBoardDesc;
+    function FieldSize():integer;
     procedure DrawBoard();
     procedure DrawLines();
   public
@@ -134,6 +135,11 @@ for X := 0 to 3 do
   end;
 end;
 
+function TBoard.FieldSize():integer;
+begin
+FieldSize := Round(Width div 8);
+end;
+
 procedure TBoard.DrawBoard();
 var
 iswhite:boolean;
@@ -143,8 +149,6 @@ begin
 
 iswhite:=false;
 Canvas.Pen.Color := clWhite;
-
-FieldSize := Round(Width div 8);
 
 for i:=0 to 7 do
 begin
@@ -161,10 +165,10 @@ begin
   for j:=0 to 7 do
   begin
 
-     field.Left:=(FieldSize*j);
-     field.Top:=(FieldSize*i);
-     field.Right:=(FieldSize*j)+(FieldSize+1);
-     field.Bottom:=(FieldSize*i)+(FieldSize+1);
+     field.Left:=(FieldSize()*j);
+     field.Top:=(FieldSize()*i);
+     field.Right:=(FieldSize()*j)+(FieldSize()+1);
+     field.Bottom:=(FieldSize()*i)+(FieldSize()+1);
 
      if iswhite then
      begin
