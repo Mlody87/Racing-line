@@ -89,6 +89,8 @@ type
   Image:TPortableNetworkGraphic;
   MoveCount:integer;
   Field:string;
+  Width:integer;
+  Height:integer;
   end;
 
   TBoard = class(TPaintBox)
@@ -238,6 +240,8 @@ begin
   Board[7,i].Image:=LoadFromFile('img/'+Pieces[0]+'White.png');
   Board[7,i].MoveCount:=0;
   Board[7,i].Field:=BoardDesc[7,i];
+  Board[7,i].Width:=50;
+  Board[7,i].Height:=50;
 end;
 
 //set black Pawns
@@ -249,6 +253,8 @@ begin
   Board[7,i].Image:=LoadFromFile('img/'+Pieces[0]+'Black.png');
   Board[7,i].MoveCount:=0;
   Board[7,i].Field:=BoardDesc[7,i];
+  Board[7,i].Width:=50;
+  Board[7,i].Height:=50;
 end;
 
 
