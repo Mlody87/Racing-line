@@ -101,6 +101,7 @@ type
     procedure Paint(); override;
     function BoardRotation(arr : TBoardDesc): TBoardDesc;
     procedure DrawBoard();
+    procedure DrawLines();
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -189,6 +190,25 @@ begin
    end;
 end;
 
+procedure TBoard.DrawLines();
+begin
+
+Canvas.Pen.Color := clBlack;
+
+Canvas.MoveTo(0,0);
+Canvas.LineTo(Width-1,0);
+
+Canvas.MoveTo(Width-1,0);
+Canvas.LineTo(Width-1,Width-1);
+
+Canvas.MoveTo(0,0);
+Canvas.LineTo(0,Width-1);
+
+Canvas.MoveTo(0,Width-1);
+Canvas.LineTo(Width-1,Width-1);
+
+end;
+
 
 constructor TBoard.Create(AOwner : TComponent);
 begin
@@ -208,20 +228,8 @@ procedure TBoard.Paint();
 begin
 
 DrawBoard();
+DrawLines();
 
-Canvas.Pen.Color := clBlack;
-
-Canvas.MoveTo(0,0);
-Canvas.LineTo(Width-1,0);
-
-Canvas.MoveTo(Width-1,0);
-Canvas.LineTo(Width-1,Width-1);
-
-Canvas.MoveTo(0,0);
-Canvas.LineTo(0,Width-1);
-
-Canvas.MoveTo(0,Width-1);
-Canvas.LineTo(Width-1,Width-1);
 end;
 
 end.
