@@ -136,12 +136,14 @@ end;
 procedure TBoard.DrawBoard();
 var
 iswhite:boolean;
-i,j:integer;
+i,j,FieldSize:integer;
 field:TRect;
 begin
 
 iswhite:=false;
 Canvas.Pen.Color := clWhite;
+
+FieldSize := Round(Width div 8);
 
 for i:=0 to 7 do
 begin
@@ -158,10 +160,10 @@ begin
   for j:=0 to 7 do
   begin
 
-     field.Left:=(80*j);
-     field.Top:=(80*i);
-     field.Right:=(80*j)+81;
-     field.Bottom:=(80*i)+81;
+     field.Left:=(FieldSize*j);
+     field.Top:=(FieldSize*i);
+     field.Right:=(FieldSize*j)+(FieldSize+1);
+     field.Bottom:=(FieldSize*i)+(FieldSize+1);
 
      if iswhite then
      begin
