@@ -235,9 +235,10 @@ procedure TBoard.SetStartPosition();
 var
 i:integer;
 begin
-//set white Pawns
+
 for i:=0 to 7 do
 begin
+  //set white Pawns
   Board[7,i].Piece:=Pieces[0];
   Board[7,i].Color:='white';
   Board[7,i].Image:=TPortableNetworkGraphic.Create;
@@ -246,12 +247,7 @@ begin
   Board[7,i].Field:=BoardDesc[7,i];
   Board[7,i].Width:=50;
   Board[7,i].Height:=50;
-end;
-
-
-//set black Pawns
-for i:=0 to 7 do
-begin
+  //set black Pawns
   Board[1,i].Piece:=Pieces[0];
   Board[1,i].Color:='black';
   Board[1,i].Image:=TPortableNetworkGraphic.Create;
@@ -273,11 +269,7 @@ begin
   Board[8,i].Field:=BoardDesc[8,i];
   Board[8,i].Width:=50;
   Board[8,i].Height:=50;
-end;
-
-//set black Pices
-for i:=0 to 7 do
-begin
+//set black Pices  
   Board[0,i].Piece:=PiecesBlack[i+1];
   Board[0,i].Color:='black';
   Board[0,i].Image:=TPortableNetworkGraphic.Create;
@@ -286,9 +278,6 @@ begin
   Board[0,i].Field:=BoardDesc[0,i];
   Board[0,i].Width:=50;
   Board[0,i].Height:=50;
-end;
-
-
 end;
 
 
