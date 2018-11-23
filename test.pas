@@ -82,6 +82,7 @@ uses
 type
 
   TBoardDesc = array[0..7,0..7] of string;
+  TPieces = array[0..8] of string;
   
   TPiece = record
   Piece:integer;
@@ -106,8 +107,10 @@ type
     ('A3','B3','C3','D3','E3','F3','G3','H3'),
     ('A2','B2','C2','D2','E2','F2','G2','H2'),
     ('A1','B1','C1','D1','E1','F1','G1','H1'));
-    Pieces : array[0..8] of string =
+    Pieces : TPieces =
     ('Pawn', 'Roock', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rock');
+    PiecesBlack : TPieces =
+    ('Pawn', 'Roock', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rock');
     Board:array[0..7,0..7] of TPiece;
   protected
     { Protected declarations }
@@ -227,6 +230,7 @@ Canvas.LineTo(Width-1,Width-1);
 
 end;
 
+
 procedure TBoard.SetStartPosition();
 var
 i:integer;
@@ -266,9 +270,22 @@ begin
   Board[8,i].Image:=TPortableNetworkGraphic.Create;
   Board[8,i].Image:=LoadFromFile('img/'+Pieces[i+1]+'White.png');
   Board[8,i].MoveCount:=0;
-  Board[8,i].Field:=BoardDesc[7,i];
+  Board[8,i].Field:=BoardDesc[8,i];
   Board[8,i].Width:=50;
   Board[8,i].Height:=50;
+end;
+
+//set black Pices
+for i:=0 to 7 do
+begin
+  Board[0,i].Piece:=PiecesBlack[i+1];
+  Board[0,i].Color:='black';
+  Board[0,i].Image:=TPortableNetworkGraphic.Create;
+  Board[0,i].Image:=LoadFromFile('img/'+Pieces[i+1]+'Black.png');
+  Board[0,i].MoveCount:=0;
+  Board[0,i].Field:=BoardDesc[0,i];
+  Board[0,i].Width:=50;
+  Board[0,i].Height:=50;
 end;
 
 
