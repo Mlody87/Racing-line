@@ -15,6 +15,7 @@ type
   Image: TBGRASVG;
   MoveCount:integer;
   Field:string;
+  Pos:TPoint;
   end;
 
   TDAD = record
@@ -75,8 +76,8 @@ end;
 function TBoard.GetFieldIJ(X,Y:integer):TPoint;
 begin
 
-  GetFieldIJ.X:=(X div FieldSize())+1;
-  GetFieldIJ.Y:=(Y div FieldSize())+1;
+  GetFieldIJ.X:=(X div FieldSize());
+  GetFieldIJ.Y:=(Y div FieldSize());
 
 end;
 
@@ -111,6 +112,31 @@ procedure TBoard.MouseMove(Shift: TShiftState; X,Y: Integer);
 begin
   inherited;
 
+   if (DAD.DAD) then
+            begin
+            if X>DAD.DADBoardPoint.X then
+            begin
+                 Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x+(X-DAD.DADBoardPoint.x);
+                 DAD.DADBoardPoint.x:=X;
+            end;
+            if X<DAD.DADBoardPoint.X then
+            begin
+                 Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x-(DAD.DADBoardPoint.x-X);
+                 DAD.DADBoardPoint.x:=X;
+            end;
+            if Y<DAD.DADBoardPoint.Y then
+            begin
+                 Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y-(DAD.DADBoardPoint.y-Y);
+                 DAD.DADBoardPoint.y:=Y;
+            end;
+            if Y>DAD.DADBoardPoint.Y then
+            begin
+                 Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y+(Y-DAD.DADBoardPoint.y);
+                 DAD.DADBoardPoint.y:=Y;
+            end;
+
+            Self.Invalidate;
+            end;
 
 
 end;
@@ -243,12 +269,14 @@ begin
   Board[i,6].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[0]+'White.svg');
   Board[i,6].MoveCount:=0;
   Board[i,6].Field:=BoardDesc[i,6];
+  Board[i,6].Pos:=Point(FieldSize()*i, FieldSize()*6);
   //set black Pawns
   Board[i,1].Piece:=Pieces[0];
   Board[i,1].Color:='black';
   Board[i,1].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[0]+'Black.svg');
   Board[i,1].MoveCount:=0;
   Board[i,1].Field:=BoardDesc[i,1];
+  Board[i,1].Pos:=Point(FieldSize()*i, FieldSize()*1);
 end;
 
 //set white Pices
@@ -259,12 +287,14 @@ begin
   Board[i,7].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[i+1]+'White.svg');
   Board[i,7].MoveCount:=0;
   Board[i,7].Field:=BoardDesc[i,7];
+  Board[i,7].Pos:=Point(FieldSize()*i, FieldSize()*7);
 //set black Pices
   Board[i,0].Piece:=PiecesBlack[i+1];
   Board[i,0].Color:='black';
   Board[i,0].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[i+1]+'Black.svg');
   Board[i,0].MoveCount:=0;
   Board[i,0].Field:=BoardDesc[i,0];
+  Board[i,0].Pos:=Point(FieldSize()*i, 0);
 end;
 
 end;
@@ -303,18 +333,18 @@ begin
    begin
        for j:=0 to 7 do
        begin
-       if Board[i,j].Image<>nil then
+       if (Board[i,j].Image<>nil) then
        begin
-         lockX:=(i*FieldSize())+5;
-         lockY:=(j*FieldSize())+5;
+       //  lockX:=(i*FieldSize())+5;
+       //  lockY:=(j*FieldSize())+5;
 
          BMP:=TBGRABitmap.Create;
 
          BMP.SetSize(FieldSize()-5,FieldSize()-5);
 
          Board[i,j].Image.StretchDraw(BMP.Canvas2D, taCenter, tlCenter, 0,0,FieldSize()-10,FieldSize()-10);
-         Canvas.Draw(lockX, lockY, BMP.Bitmap);
-
+       //  Canvas.Draw(lockX, lockY, BMP.Bitmap);
+           Canvas.Draw(Board[i,j].Pos.x, Board[i,j].Pos.y, BMP.Bitmap);
          BMP.Free;
 
        end;
