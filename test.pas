@@ -50,8 +50,9 @@ type
     procedure DrawPosition();
     procedure SetStartPosition();
     procedure SetVariables();
-    function GetFieldIJ(X,Y:integer):TPoint;
-    function GetFieldXY(X,Y:integer):TPoint;
+    function GetFieldIJ(X,Y:integer):TPoint; //by point on board
+    function GetFieldXY(X,Y:integer):TPoint; //by point on board
+    function GetFieldName(Field:TPoint):string; //by ij
    procedure DADCancelMoving();
   public
     { Public declarations }
@@ -74,7 +75,7 @@ begin
   RegisterComponents('Additional',[TBoard]);
 end;
 
-function TBoard.GetFieldIJ(X,Y:integer):TPoint; //by point on board
+function TBoard.GetFieldIJ(X,Y:integer):TPoint; 
 begin
 
   GetFieldIJ.X:=(X div FieldSize());
@@ -83,7 +84,7 @@ begin
 end;
 
 
-function TBoard.GetFieldXY(X,Y:integer):TPoint; //by point on board
+function TBoard.GetFieldXY(X,Y:integer):TPoint; 
 var
 Point:TPoint;
 begin
@@ -93,6 +94,11 @@ begin
   GetFieldXY.X:=(Point.X)*FieldSize();
   GetFieldXY.Y:=(Point.Y)*FieldSize();
 
+end;
+
+function TBoard.GetFieldName(Field:TPoint):string; 
+begin
+  GetFieldName:=Board[Field.x,Field.y].Field;
 end;
 
 procedure TBoard.MouseDown(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
