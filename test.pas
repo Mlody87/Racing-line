@@ -141,6 +141,13 @@ begin
 
 end;
 
+procedure TBoard.DADCancelMoving(Field:TPoint);
+begin
+  Board[Field.X,Field.Y].Pos:=GetFieldXY(Field);
+  DAD.DAD:=false;
+  Self.Repaint
+end;
+
 procedure TBoard.MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 var
 i,j:integer;
@@ -160,6 +167,12 @@ begin
   ActualField:=GetFieldIJ(X,Y);
   
   if (PointsEqual(ActualField,DAD.DADCordsIJ)) then
+  begin
+  
+  DADCancelMoving(DAD.DADCordsIJ);
+  Exit;
+  
+  end;
   
 
 
