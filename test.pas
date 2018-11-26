@@ -144,7 +144,20 @@ end;
 procedure TBoard.MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 begin
   inherited;
+    function GetFieldIJ(X,Y:integer):TPoint;
+    function GetFieldXY(X,Y:integer):TPoint;
+  DAD:boolean;
+  DADCordsIJ:TPoint;
+  DADCordsXY:TPoint;
+  DADBoardPoint:TPoint;
 
+if (DAD.DAD) then
+begin
+
+
+
+
+end;
 
 
 end;
