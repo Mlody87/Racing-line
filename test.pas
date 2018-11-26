@@ -141,9 +141,9 @@ begin
 
 end;
 
-procedure TBoard.DADCancelMoving(Field:TPoint);
+procedure TBoard.DADCancelMoving();
 begin
-  Board[Field.X,Field.Y].Pos:=GetFieldXY(Field);
+  Board[DAD.DADCordsIJ.X,DAD.DADCordsIJ.Y].Pos:=DAD.DADCordsXY;
   DAD.DAD:=false;
   Self.Repaint
 end;
@@ -169,7 +169,7 @@ begin
   if (PointsEqual(ActualField,DAD.DADCordsIJ)) then
   begin
   
-  DADCancelMoving(DAD.DADCordsIJ);
+  DADCancelMoving;
   Exit;
   
   end;
