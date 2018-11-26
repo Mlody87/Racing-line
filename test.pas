@@ -99,7 +99,7 @@ end;
 
 function TBoard.GetFieldName(Field:TPoint):string; 
 begin
-  GetFieldName:=Board[Field.x,Field.y].Field;
+  GetFieldName:=BoardDesc[Field.x,Field.y].Field;
 end;
 
 function TBoard.GetIJByName(name:string):TPoint;
@@ -208,7 +208,7 @@ Board[ToIJ.X,ToIJ.Y].Color:=Board[FromIJ.X,FromIJ.Y].Color;
 Board[ToIJ.X,ToIJ.Y].Image:=Board[FromIJ.X,FromIJ.Y].Image;
 Board[ToIJ.X,ToIJ.Y].MoveCount:=Board[FromIJ.X,FromIJ.Y].MoveCount+1;
 Board[ToIJ.X,ToIJ.Y].Field:=BoardDesc[ToIJ.X,ToIJ.Y];
-Board[ToIJ.X,ToIJ.Y].Pos:=
+Board[ToIJ.X,ToIJ.Y].Pos:=Point(FieldSize()*ToIJ.X, FieldSize()*ToIJ.Y);
 
 ClearField(FromIJ);
 
