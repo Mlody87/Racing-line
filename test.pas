@@ -200,12 +200,16 @@ begin
 FromIJ:=GetIJByName(From);
 ToIJ:=GetIJByName(To);
 
+if Board[ToIJ.X,ToIJ.Y]<> nil then
+  ClearField(ToIJ);
+
 Board[ToIJ.X,ToIJ.Y].Piece:=Board[FromIJ.X,FromIJ.Y].Piece;
 Board[ToIJ.X,ToIJ.Y].Color:=Board[FromIJ.X,FromIJ.Y].Color;
 Board[ToIJ.X,ToIJ.Y].Image:=Board[FromIJ.X,FromIJ.Y].Image;
 Board[ToIJ.X,ToIJ.Y].MoveCount:=Board[FromIJ.X,FromIJ.Y].MoveCount+1;
 Board[ToIJ.X,ToIJ.Y].Field:=BoardDesc[ToIJ.X,ToIJ.Y];
 Board[ToIJ.X,ToIJ.Y].Pos:=
+
 ClearField(FromIJ);
 
 end;
