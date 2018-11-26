@@ -110,7 +110,7 @@ begin
 for i:=0 to 7 do
   for j:=0 to 7 do
     begin
-      if (Board[i,j].Field=name) then
+      if (BoardDesc[i,j].Field=name) then
       begin
         GetIJByName:=Point(i,j);
         Exit;
@@ -204,7 +204,8 @@ Board[ToIJ.X,ToIJ.Y].Piece:=Board[FromIJ.X,FromIJ.Y].Piece;
 Board[ToIJ.X,ToIJ.Y].Color:=Board[FromIJ.X,FromIJ.Y].Color;
 Board[ToIJ.X,ToIJ.Y].Image:=Board[FromIJ.X,FromIJ.Y].Image;
 Board[ToIJ.X,ToIJ.Y].MoveCount:=Board[FromIJ.X,FromIJ.Y].MoveCount+1;
-
+Board[ToIJ.X,ToIJ.Y].Field:=BoardDesc[ToIJ.X,ToIJ.Y];
+Board[ToIJ.X,ToIJ.Y].Pos:=
 ClearField(FromIJ);
 
 end;
