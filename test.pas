@@ -427,7 +427,6 @@ end;
 procedure TBoard.DrawPosition();
 var
 i,j:integer;
-lockX,lockY:integer;
 BMP:TBGRABitmap;
 begin
 
