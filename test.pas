@@ -52,6 +52,7 @@ type
     procedure SetVariables();
     function GetFieldIJ(X,Y:integer):TPoint;
     function GetFieldXY(X,Y:integer):TPoint;
+   procedure DADCancelMoving();
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -73,7 +74,7 @@ begin
   RegisterComponents('Additional',[TBoard]);
 end;
 
-function TBoard.GetFieldIJ(X,Y:integer):TPoint;
+function TBoard.GetFieldIJ(X,Y:integer):TPoint; //by point on board
 begin
 
   GetFieldIJ.X:=(X div FieldSize());
@@ -82,7 +83,7 @@ begin
 end;
 
 
-function TBoard.GetFieldXY(X,Y:integer):TPoint;
+function TBoard.GetFieldXY(X,Y:integer):TPoint; //by point on board
 var
 Point:TPoint;
 begin
@@ -145,7 +146,7 @@ procedure TBoard.DADCancelMoving();
 begin
   Board[DAD.DADCordsIJ.X,DAD.DADCordsIJ.Y].Pos:=DAD.DADCordsXY;
   DAD.DAD:=false;
-  Self.Repaint
+  Self.Repaint;
 end;
 
 procedure TBoard.MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
@@ -172,10 +173,13 @@ begin
   DADCancelMoving;
   Exit;
   
+  end
+  else
+  begin
+  
+  
   end;
   
-
-
 
 end;
 
