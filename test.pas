@@ -101,6 +101,23 @@ begin
   GetFieldName:=Board[Field.x,Field.y].Field;
 end;
 
+function TBoard.GetIJByName(name:string):TPoint;
+var
+i,j:integer;
+begin
+
+for i:=0 to 7 do
+  for j:=0 to 7 do
+    begin
+      if (Board[i,j].Field=name) then
+      begin
+        GetIJByName:=Point(i,j);
+        Exit;
+      end;
+    end;
+
+end;
+
 procedure TBoard.MouseDown(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 begin
   inherited;
@@ -153,6 +170,11 @@ begin
   Board[DAD.DADCordsIJ.X,DAD.DADCordsIJ.Y].Pos:=DAD.DADCordsXY;
   DAD.DAD:=false;
   Self.Repaint;
+end;
+
+procedure TBoard.Move(From,To:string);
+begin
+
 end;
 
 procedure TBoard.MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
