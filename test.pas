@@ -168,7 +168,7 @@ begin
                  DAD.DADBoardPoint.y:=Y;
             end;
 
-            Self.Invalidate;
+            Self.Repaint;
             end;
 
 
@@ -211,6 +211,7 @@ Board[ToIJ.X,ToIJ.Y].Field:=BoardDesc[ToIJ.X,ToIJ.Y];
 Board[ToIJ.X,ToIJ.Y].Pos:=Point(FieldSize()*ToIJ.X, FieldSize()*ToIJ.Y);
 
 ClearField(FromIJ);
+Self.Repaint;
 
 end;
 
@@ -234,18 +235,16 @@ begin
   ActualField:=GetFieldIJ(X,Y);
   
   if (PointsEqual(ActualField,DAD.DADCordsIJ)) then
-  begin
-  
-  DADCancelMoving;
-  Exit;
-  
+  begin 
+    DADCancelMoving;
+    Exit;
   end
   else
   begin
-  
-  
+    Move(GetFieldName(DAD.DADCordsIJ),GetFieldName(ActualField));
   end;
-  
+
+DAD.DAD:=False;
 
 end;
 
