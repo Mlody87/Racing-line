@@ -338,25 +338,13 @@ begin
 
          BMP:=TBGRABitmap.Create;
 
-         BMP.SetSize(FieldSize()-5,FieldSize()-5);
-
-         Board[i,j].Image.StretchDraw(BMP.Canvas2D, taCenter, tlCenter, 0,0,FieldSize()-10,FieldSize()-10);
-         
-         Canvas.Draw(Board[i,j].Pos.x, Board[i,j].Pos.y, BMP.Bitmap);
-         
-         BMP.Free;
-         
-         //cen///////
-
-         BMP:=TBGRABitmap.Create;
-
          BMP.SetSize(FieldSize(),FieldSize());
 
          Board[i,j].Image.StretchDraw(BMP.Canvas2D, taCenter, tlCenter, 0,0,FieldSize(),FieldSize());
          
          Canvas.Draw(Board[i,j].Pos.x, Board[i,j].Pos.y, BMP.Bitmap);
          
-         ////////////
+         BMP.Free;
 
        end;
    end;
