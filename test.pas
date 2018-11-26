@@ -57,6 +57,7 @@ type
     procedure DADCancelMoving();
     procedure Move(From,Too:string);
     procedure ClearField(Field:TPoint);
+    procedure AssignField(FFromIJ,FToIJ:TPoint);
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -139,6 +140,17 @@ begin
   Board[Field.X,Field.Y].Pos:=Point(FieldSize()*Field.x, FieldSize()*Field.y);
 end;
 
+procedure TBoard.AssignField(FFromIJ,FToIJ:TPoint);
+begin
+Board[FToIJ.X,FToIJ.Y].Piece:=Board[FFromIJ.X,FFromIJ.Y].Piece;
+Board[FToIJ.X,FToIJ.Y].Color:=Board[FFromIJ.X,FFromIJ.Y].Color;
+Board[FToIJ.X,FToIJ.Y].Image:=TBGRASVG.Create;
+Board[FToIJ.X,FToIJ.Y].Image:=Board[FFromIJ.X,FFromIJ.Y].Image;
+Board[FToIJ.X,FToIJ.Y].MoveCount:=Board[FFromIJ.X,FFromIJ.Y].MoveCount+1;
+Board[FToIJ.X,FToIJ.Y].Field:=BoardDesc[FToIJ.X,FToIJ.Y];
+Board[FToIJ.X,FToIJ.Y].Pos:=Point(FieldSize()*FToIJ.X, FieldSize()*FToIJ.Y);
+end;
+
 procedure TBoard.Move(From,Too:string);
 var
 FromIJ,ToIJ:TPoint;
@@ -150,13 +162,7 @@ ToIJ:=GetIJByName(Too);
 if Board[ToIJ.X,ToIJ.Y].Piece<> '' then
   ClearField(ToIJ);
 
-Board[ToIJ.X,ToIJ.Y].Piece:=Board[FromIJ.X,FromIJ.Y].Piece;
-Board[ToIJ.X,ToIJ.Y].Color:=Board[FromIJ.X,FromIJ.Y].Color;
-Board[ToIJ.X,ToIJ.Y].Image:=TBGRASVG.Create;
-Board[ToIJ.X,ToIJ.Y].Image:=Board[FromIJ.X,FromIJ.Y].Image;
-Board[ToIJ.X,ToIJ.Y].MoveCount:=Board[FromIJ.X,FromIJ.Y].MoveCount+1;
-Board[ToIJ.X,ToIJ.Y].Field:=BoardDesc[ToIJ.X,ToIJ.Y];
-Board[ToIJ.X,ToIJ.Y].Pos:=Point(FieldSize()*ToIJ.X, FieldSize()*ToIJ.Y);
+AssignField(FromIJ,ToIJ);
 
 ClearField(FromIJ);
 
@@ -297,10 +303,15 @@ var
 iswhite:boolean;
 i,j:integer;
 field:TRect;
+color1,color2:TColor;
 begin
 
 iswhite:=false;
 Canvas.Pen.Color := clWhite;
+
+
+color1:=(181 shl 16)+ (217 shl 8)+ 240;
+color2:=(99 shl 16)+ (136 shl 8)+ 181;
 
 for i:=0 to 7 do
 begin
@@ -324,11 +335,11 @@ begin
 
      if iswhite then
      begin
-       Canvas.brush.Color := cl3DLight;
+       Canvas.brush.Color := color1; //cl3DLight;
      end
      else
      begin
-       Canvas.brush.Color := clAppWorkspace;
+       Canvas.brush.Color := color2; //clAppWorkspace;
      end;
 
      Canvas.rectangle(field);
