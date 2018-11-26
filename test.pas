@@ -120,12 +120,20 @@ for i:=0 to 7 do
 end;
 
 procedure TBoard.MouseDown(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
+var
+test:TPoint;
 begin
   inherited;
+  
+  test:=GetFieldIJ(X,Y);
+  
+  if Board[test.X,test.Y]=nil then
+    Exit;
+  
 
   DAD.DAD:=true;
 
-  DAD.DADCordsIJ:=GetFieldIJ(X,Y);
+  DAD.DADCordsIJ:=test;
 
   DAD.DADCordsXY:=GetFieldXY(X,Y);
 
@@ -173,8 +181,31 @@ begin
   Self.Repaint;
 end;
 
-procedure TBoard.Move(From,To:string);
+procedure TBoard.ClearField(Field:TPoint);
 begin
+  Board[Field.X,Field.Y].Piece:='';
+  Board[Field.X,Field.Y].Color:='';
+  Board[Field.X,Field.Y].Image.Free;
+  Board[Field.X,Field.Y].MoveCount:=0;
+  Board[Field.X,Field.Y].Field:='';
+  Board[Field.X,Field.Y].Pos:TPoint;
+  Board[Field.X,Field.Y]:=nil;
+end;
+
+procedure TBoard.Move(From,To:string);
+var
+FromIJ,ToIJ:TPoint;
+begin
+
+FromIJ:=GetIJByName(From);
+ToIJ:=GetIJByName(To);
+
+Board[ToIJ.X,ToIJ.Y].Piece:=Board[FromIJ.X,FromIJ.Y].Piece;
+Board[ToIJ.X,ToIJ.Y].Color:=Board[FromIJ.X,FromIJ.Y].Color;
+Board[ToIJ.X,ToIJ.Y].Image:=Board[FromIJ.X,FromIJ.Y].Image;
+Board[ToIJ.X,ToIJ.Y].MoveCount:=Board[FromIJ.X,FromIJ.Y].MoveCount+1;
+
+ClearField(FromIJ);
 
 end;
 
