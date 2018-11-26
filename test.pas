@@ -350,12 +350,9 @@ begin
 
          BMP:=TBGRABitmap.Create;
 
-         BMP.SetSize(FieldSize()-5,FieldSize()-5);
+         BMP.SetSize(FieldSize(),FieldSize());
 
-         Board[i,j].Image.StretchDraw(BMP.Canvas2D, taCenter, tlCenter, 0,0,FieldSize()-10,FieldSize()-10);
-         
-         panel1.left := (screen.width div 2) - panel1.width div 2;
-         panel1.top := (screen.height div 2) - panel1.height div 2;
+         Board[i,j].Image.StretchDraw(BMP.Canvas2D, taCenter, tlCenter, 0,0,FieldSize(),FieldSize());
          
          Canvas.Draw(Board[i,j].Pos.x, Board[i,j].Pos.y, BMP.Bitmap);
          
