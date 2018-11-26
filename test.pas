@@ -142,6 +142,9 @@ begin
 end;
 
 procedure TBoard.MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
+var
+i,j:integer;
+ActualField:TPoint;
 begin
   inherited;
     function GetFieldIJ(X,Y:integer):TPoint;
@@ -153,7 +156,11 @@ begin
 
 if (DAD.DAD) then
 begin
-
+  
+  ActualField:=GetFieldIJ(X,Y);
+  
+  if (PointsEqual(ActualField,DAD.DADCordsIJ)) then
+  
 
 
 
