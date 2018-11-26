@@ -53,6 +53,7 @@ type
     function GetFieldIJ(X,Y:integer):TPoint; //by point on board
     function GetFieldXY(X,Y:integer):TPoint; //by point on board
     function GetFieldName(Field:TPoint):string; //by ij
+    function GetIJByName(name:string):TPoint;
    procedure DADCancelMoving();
   public
     { Public declarations }
@@ -176,6 +177,7 @@ procedure TBoard.Move(From,To:string);
 begin
 
 end;
+
 
 procedure TBoard.MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 var
