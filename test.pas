@@ -53,8 +53,10 @@ type
     function GetFieldIJ(X,Y:integer):TPoint; //by point on board
     function GetFieldXY(X,Y:integer):TPoint; //by point on board
     function GetFieldName(Field:TPoint):string; //by ij
-    function GetIJByName(name:string):TPoint;
-   procedure DADCancelMoving();
+    function GetIJByName(FieldName:string):TPoint;
+    procedure DADCancelMoving();
+    procedure Move(From,Too:string);
+    procedure ClearField(Field:TPoint);
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -76,7 +78,7 @@ begin
   RegisterComponents('Additional',[TBoard]);
 end;
 
-function TBoard.GetFieldIJ(X,Y:integer):TPoint; 
+function TBoard.GetFieldIJ(X,Y:integer):TPoint;
 begin
 
   GetFieldIJ.X:=(X div FieldSize());
@@ -85,7 +87,7 @@ begin
 end;
 
 
-function TBoard.GetFieldXY(X,Y:integer):TPoint; 
+function TBoard.GetFieldXY(X,Y:integer):TPoint;
 var
 Point:TPoint;
 begin
@@ -97,12 +99,12 @@ begin
 
 end;
 
-function TBoard.GetFieldName(Field:TPoint):string; 
+function TBoard.GetFieldName(Field:TPoint):string;
 begin
-  GetFieldName:=BoardDesc[Field.x,Field.y].Field;
+  GetFieldName:=BoardDesc[Field.x,Field.y];
 end;
 
-function TBoard.GetIJByName(name:string):TPoint;
+function TBoard.GetIJByName(FieldName:string):TPoint;
 var
 i,j:integer;
 begin
@@ -110,7 +112,7 @@ begin
 for i:=0 to 7 do
   for j:=0 to 7 do
     begin
-      if (BoardDesc[i,j].Field=name) then
+      if (BoardDesc[i,j]=FieldName) then
       begin
         GetIJByName:=Point(i,j);
         Exit;
@@ -119,17 +121,60 @@ for i:=0 to 7 do
 
 end;
 
+procedure TBoard.DADCancelMoving();
+begin
+  Board[DAD.DADCordsIJ.X,DAD.DADCordsIJ.Y].Pos:=Point(FieldSize()*DAD.DADCordsIJ.X, FieldSize()*DAD.DADCordsIJ.Y);
+  DAD.DAD:=false;
+  Self.Repaint;
+end;
+
+procedure TBoard.ClearField(Field:TPoint);
+begin
+  Board[Field.X,Field.Y].Piece:='';
+  Board[Field.X,Field.Y].Color:='';
+//  Board[Field.X,Field.Y].Image.Free;
+//  Board[Field.X,Field.Y].Image:=nil;
+  Board[Field.X,Field.Y].MoveCount:=0;
+  Board[Field.X,Field.Y].Field:='';
+  Board[Field.X,Field.Y].Pos:=Point(FieldSize()*Field.x, FieldSize()*Field.y);
+end;
+
+procedure TBoard.Move(From,Too:string);
+var
+FromIJ,ToIJ:TPoint;
+begin
+
+FromIJ:=GetIJByName(From);
+ToIJ:=GetIJByName(Too);
+
+if Board[ToIJ.X,ToIJ.Y].Piece<> '' then
+  ClearField(ToIJ);
+
+Board[ToIJ.X,ToIJ.Y].Piece:=Board[FromIJ.X,FromIJ.Y].Piece;
+Board[ToIJ.X,ToIJ.Y].Color:=Board[FromIJ.X,FromIJ.Y].Color;
+Board[ToIJ.X,ToIJ.Y].Image:=TBGRASVG.Create;
+Board[ToIJ.X,ToIJ.Y].Image:=Board[FromIJ.X,FromIJ.Y].Image;
+Board[ToIJ.X,ToIJ.Y].MoveCount:=Board[FromIJ.X,FromIJ.Y].MoveCount+1;
+Board[ToIJ.X,ToIJ.Y].Field:=BoardDesc[ToIJ.X,ToIJ.Y];
+Board[ToIJ.X,ToIJ.Y].Pos:=Point(FieldSize()*ToIJ.X, FieldSize()*ToIJ.Y);
+
+ClearField(FromIJ);
+
+Self.Invalidate;
+
+end;
+
+
 procedure TBoard.MouseDown(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 var
 test:TPoint;
 begin
   inherited;
-  
+
   test:=GetFieldIJ(X,Y);
-  
-  if Board[test.X,test.Y]=nil then
+
+  if Board[test.X,test.Y].Piece='' then
     Exit;
-  
 
   DAD.DAD:=true;
 
@@ -168,74 +213,31 @@ begin
                  DAD.DADBoardPoint.y:=Y;
             end;
 
-            Self.Repaint;
+            Self.Invalidate;
             end;
 
 
 end;
 
-procedure TBoard.DADCancelMoving();
-begin
-  Board[DAD.DADCordsIJ.X,DAD.DADCordsIJ.Y].Pos:=DAD.DADCordsXY;
-  DAD.DAD:=false;
-  Self.Repaint;
-end;
-
-procedure TBoard.ClearField(Field:TPoint);
-begin
-  Board[Field.X,Field.Y].Piece:='';
-  Board[Field.X,Field.Y].Color:='';
-  Board[Field.X,Field.Y].Image.Free;
-  Board[Field.X,Field.Y].MoveCount:=0;
-  Board[Field.X,Field.Y].Field:='';
-  Board[Field.X,Field.Y].Pos:TPoint;
-  Board[Field.X,Field.Y]:=nil;
-end;
-
-procedure TBoard.Move(From,To:string);
-var
-FromIJ,ToIJ:TPoint;
-begin
-
-FromIJ:=GetIJByName(From);
-ToIJ:=GetIJByName(To);
-
-if Board[ToIJ.X,ToIJ.Y]<> nil then
-  ClearField(ToIJ);
-
-Board[ToIJ.X,ToIJ.Y].Piece:=Board[FromIJ.X,FromIJ.Y].Piece;
-Board[ToIJ.X,ToIJ.Y].Color:=Board[FromIJ.X,FromIJ.Y].Color;
-Board[ToIJ.X,ToIJ.Y].Image:=Board[FromIJ.X,FromIJ.Y].Image;
-Board[ToIJ.X,ToIJ.Y].MoveCount:=Board[FromIJ.X,FromIJ.Y].MoveCount+1;
-Board[ToIJ.X,ToIJ.Y].Field:=BoardDesc[ToIJ.X,ToIJ.Y];
-Board[ToIJ.X,ToIJ.Y].Pos:=Point(FieldSize()*ToIJ.X, FieldSize()*ToIJ.Y);
-
-ClearField(FromIJ);
-Self.Repaint;
-
-end;
-
-
 procedure TBoard.MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 var
-i,j:integer;
 ActualField:TPoint;
 begin
   inherited;
-    function GetFieldIJ(X,Y:integer):TPoint;
-    function GetFieldXY(X,Y:integer):TPoint;
-  DAD:boolean;
-  DADCordsIJ:TPoint;
-  DADCordsXY:TPoint;
-  DADBoardPoint:TPoint;
 
 if (DAD.DAD) then
 begin
-  
+
+if (X>Width)or(X<0)or(Y>Height)or(Y<0) then
+begin
+    DADCancelMoving;
+    Exit;
+end;
+
   ActualField:=GetFieldIJ(X,Y);
-  
+
   if (PointsEqual(ActualField,DAD.DADCordsIJ)) then
-  begin 
+  begin
     DADCancelMoving;
     Exit;
   end
@@ -247,6 +249,7 @@ begin
 DAD.DAD:=False;
 
 end;
+
 
 
 end;
@@ -267,7 +270,7 @@ end;
 
 function TBoard.BoardRotationPieces(arr : TBoardPieces): TBoardPieces;
 var
-X,Y:integer;
+X,Y,i,j:integer;
 Temp:TPiece;
 begin
 for X := 0 to 3 do
@@ -276,6 +279,11 @@ for X := 0 to 3 do
     Temp := arr[X, Y];
     BoardRotationPieces[X, Y] := arr[7 - X, 7 - Y];
     BoardRotationPieces[7 - X, 7 - Y] := Temp;
+
+    for i:=0 to 7 do
+        for j:=0 to 7 do
+            BoardRotationPieces[i,j].Pos:=Point(FieldSize()*i, FieldSize()*j);
+
   end;
 end;
 
@@ -409,17 +417,17 @@ FBottomColor := 'white';
 Pieces[0]:='Pawn'; Pieces[1]:='Rook'; Pieces[2]:='Knight'; Pieces[3]:='Bishop';
 Pieces[4]:='Queen'; Pieces[5]:='King'; Pieces[6]:='Bishop'; Pieces[7]:='Knight'; Pieces[8]:='Rook';
 
-BoardDesc[0,0]:='A8';BoardDesc[0,1]:='B8';BoardDesc[0,2]:='C8';BoardDesc[0,3]:='D8';BoardDesc[0,4]:='E8';BoardDesc[0,5]:='F8';BoardDesc[0,6]:='G8';BoardDesc[0,7]:='H8';
-BoardDesc[1,0]:='A7';BoardDesc[1,1]:='B7';BoardDesc[1,2]:='C7';BoardDesc[1,3]:='D7';BoardDesc[1,4]:='E7';BoardDesc[1,5]:='F7';BoardDesc[1,6]:='G7';BoardDesc[1,7]:='H7';
-BoardDesc[2,0]:='A6';BoardDesc[2,1]:='B6';BoardDesc[2,2]:='C6';BoardDesc[2,3]:='D6';BoardDesc[2,4]:='E6';BoardDesc[2,5]:='F6';BoardDesc[2,6]:='G6';BoardDesc[2,7]:='H6';
-BoardDesc[3,0]:='A5';BoardDesc[3,1]:='B5';BoardDesc[3,2]:='C5';BoardDesc[3,3]:='D5';BoardDesc[3,4]:='E5';BoardDesc[3,5]:='F5';BoardDesc[3,6]:='G5';BoardDesc[3,7]:='H5';
-BoardDesc[4,0]:='A4';BoardDesc[4,1]:='B4';BoardDesc[4,2]:='C4';BoardDesc[4,3]:='D4';BoardDesc[4,4]:='E4';BoardDesc[4,5]:='F4';BoardDesc[4,6]:='G4';BoardDesc[4,7]:='H4';
-BoardDesc[5,0]:='A3';BoardDesc[5,1]:='B3';BoardDesc[5,2]:='C3';BoardDesc[5,3]:='D3';BoardDesc[5,4]:='E3';BoardDesc[5,5]:='F3';BoardDesc[5,6]:='G3';BoardDesc[5,7]:='H3';
-BoardDesc[6,0]:='A2';BoardDesc[6,1]:='B2';BoardDesc[6,2]:='C2';BoardDesc[6,3]:='D2';BoardDesc[6,4]:='E2';BoardDesc[6,5]:='F2';BoardDesc[6,6]:='G2';BoardDesc[6,7]:='H2';
-BoardDesc[7,0]:='A1';BoardDesc[7,1]:='B1';BoardDesc[7,2]:='C1';BoardDesc[7,3]:='D1';BoardDesc[7,4]:='E1';BoardDesc[7,5]:='F1';BoardDesc[7,6]:='G1';BoardDesc[7,7]:='H1';
+BoardDesc[0,0]:='A8';BoardDesc[1,0]:='B8';BoardDesc[2,0]:='C8';BoardDesc[3,0]:='D8';BoardDesc[4,0]:='E8';BoardDesc[5,0]:='F8';BoardDesc[6,0]:='G8';BoardDesc[7,0]:='H8';
+BoardDesc[0,1]:='A7';BoardDesc[1,1]:='B7';BoardDesc[2,1]:='C7';BoardDesc[3,1]:='D7';BoardDesc[4,1]:='E7';BoardDesc[5,1]:='F7';BoardDesc[6,1]:='G7';BoardDesc[7,1]:='H7';
+BoardDesc[0,2]:='A6';BoardDesc[1,2]:='B6';BoardDesc[2,2]:='C6';BoardDesc[3,2]:='D6';BoardDesc[4,2]:='E6';BoardDesc[5,2]:='F6';BoardDesc[6,2]:='G6';BoardDesc[7,2]:='H6';
+BoardDesc[0,3]:='A5';BoardDesc[1,3]:='B5';BoardDesc[2,3]:='C5';BoardDesc[3,3]:='D5';BoardDesc[4,3]:='E5';BoardDesc[5,3]:='F5';BoardDesc[6,3]:='G5';BoardDesc[7,3]:='H5';
+BoardDesc[0,4]:='A4';BoardDesc[1,4]:='B4';BoardDesc[2,4]:='C4';BoardDesc[3,4]:='D4';BoardDesc[4,4]:='E4';BoardDesc[5,4]:='F4';BoardDesc[6,4]:='G4';BoardDesc[7,4]:='H4';
+BoardDesc[0,5]:='A3';BoardDesc[1,5]:='B3';BoardDesc[2,5]:='C3';BoardDesc[3,5]:='D3';BoardDesc[4,5]:='E3';BoardDesc[5,5]:='F3';BoardDesc[6,5]:='G3';BoardDesc[7,5]:='H3';
+BoardDesc[0,6]:='A2';BoardDesc[1,6]:='B2';BoardDesc[2,6]:='C2';BoardDesc[3,6]:='D2';BoardDesc[4,6]:='E2';BoardDesc[5,6]:='F2';BoardDesc[6,6]:='G2';BoardDesc[7,6]:='H2';
+BoardDesc[0,7]:='A1';BoardDesc[1,7]:='B1';BoardDesc[2,7]:='C1';BoardDesc[3,7]:='D1';BoardDesc[4,7]:='E1';BoardDesc[5,7]:='F1';BoardDesc[6,7]:='G1';BoardDesc[7,7]:='H1';
 
 PiecesBlack[0]:='Pawn';PiecesBlack[1]:='Rook';PiecesBlack[2]:='Knight';PiecesBlack[3]:='Bishop';
-PiecesBlack[4]:='King';PiecesBlack[4]:='Queen';PiecesBlack[5]:='Bishop';PiecesBlack[6]:='Knight';PiecesBlack[7]:='Rook';
+PiecesBlack[4]:='King';PiecesBlack[5]:='Queen';PiecesBlack[6]:='Bishop';PiecesBlack[7]:='Knight';PiecesBlack[8]:='Rook';
 
 end;
 
@@ -434,7 +442,7 @@ begin
    begin
        for j:=0 to 7 do
        begin
-       if (Board[i,j].Image<>nil) then
+       if (Board[i,j].Piece<>'') then
        begin
 
          BMP:=TBGRABitmap.Create;
@@ -442,11 +450,10 @@ begin
          BMP.SetSize(FieldSize(),FieldSize());
 
          Board[i,j].Image.StretchDraw(BMP.Canvas2D, taCenter, tlCenter, 0,0,FieldSize(),FieldSize());
-         
          Canvas.Draw(Board[i,j].Pos.x, Board[i,j].Pos.y, BMP.Bitmap);
-         
          BMP.Free;
 
+           //   Canvas.TextOut(Board[i,j].Pos.x,Board[i,j].Pos.y,BoardDesc[i,j]);
        end;
    end;
 
@@ -458,7 +465,7 @@ constructor TBoard.Create(AOwner : TComponent);
 begin
   inherited Create(AOwner);
   Self.Width:=500;
-Self.Height:=500;
+  Self.Height:=500;
   SetVariables();
   SetStartPosition();
 
@@ -471,11 +478,10 @@ begin
       begin
       BoardDesc := BoardRotation(BoardDesc);
       Board := BoardRotationPieces(Board);
+      FBottomColor:=botcolor;
       end;
 
-   FBottomColor:=botcolor;
-
-   Self.Repaint;
+   Self.repaint;
 
 end;
 
