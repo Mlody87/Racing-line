@@ -8,18 +8,19 @@ uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls, BGRABitmap, BGRASVG, BGRABitmapTypes;
 
 const
-  TStartWhitePieces : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
-  TStartBlackPieces : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook');
+  START_WHITE_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
+  START_BLACK_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook');
 
 type
 
+  TPieces = (Pawn=0, Rook=1, Knight=2, Bishop=3, Queen=4, King=5);
+
+  TPieceColor = (White, Black);
+
   TPiece = record
-  Piece:string;
-  Color:string;
-  Image: TBGRASVG;
-  BMP:TBGRABitmap;
+  Piece:TPieces;
+  Color:TPieceColor;
   MoveCount:integer;
-  Field:string;
   Pos:TPoint;
   Tied:boolean;
   end;
@@ -36,8 +37,8 @@ type
 
   TColorMove = record
     color:boolean;
-    from:Tpoint;
-    too:Tpoint;
+    from:TPoint;
+    too:TPoint;
   end;
 
   TBoard = class(TPaintBox)
@@ -454,68 +455,55 @@ end;
 procedure TBoard.SetStartPosition();
 var
 i,FSize:integer;
-piece:^TPiece;
 begin
 FSize:=FieldSize();
 
 for i:=0 to 7 do
 begin
   //set white Pawns
-  new(piece);
-  piece^.Piece:=TStartWhitePieces[0];
-  piece^.Color:='white';
-  piece^.Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartWhitePieces[0]+'White.svg');
-  piece^.BMP:=TBGRABitmap.Create;
-  piece^.BMP.SetSize(FSize,FSize);
-  piece^.Image.StretchDraw(Board[i,6].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
-  piece^.MoveCount:=0;
-  piece^.Field:=BoardDesc[i,6];
-  piece^.Pos:=Point(FSize*i, FSize*6);
-  piece^.Tied:=false;
-  Board[i,6]:=piece;
+  Board[i,6].Piece:=TStartWhitePieces[0];
+  Board[i,6].Color:='white';
+  Board[i,6].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartWhitePieces[0]+'White.svg');
+  Board[i,6].BMP:=TBGRABitmap.Create;
+  Board[i,6].BMP.SetSize(FSize,FSize);
+  Board[i,6].Image.StretchDraw(Board[i,6].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+  Board[i,6].MoveCount:=0;
+  Board[i,6].Field:=BoardDesc[i,6];
+  Board[i,6].Pos:=Point(FSize*i, FSize*6);
   //set black Pawns
-  new(piece);
-  piece^.Piece:=TStartBlackPieces[0];
-  piece^.Color:='black';
-  piece^.Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartBlackPieces[0]+'Black.svg');
-  piece^.BMP:=TBGRABitmap.Create;
-  piece^.BMP.SetSize(FSize,FSize);
-  piece^.Image.StretchDraw(Board[i,1].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
-  piece^.MoveCount:=0;
-  piece^.Field:=BoardDesc[i,1];
-  piece^.Pos:=Point(FSize*i, FSize*1);
-  piece^.Tied:=false;
-  Board[i,1]:=piece;
+  Board[i,1].Piece:=TStartBlackPieces[0];
+  Board[i,1].Color:='black';
+  Board[i,1].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartBlackPieces[0]+'Black.svg');
+  Board[i,1].BMP:=TBGRABitmap.Create;
+  Board[i,1].BMP.SetSize(FSize,FSize);
+  Board[i,1].Image.StretchDraw(Board[i,1].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+  Board[i,1].MoveCount:=0;
+  Board[i,1].Field:=BoardDesc[i,1];
+  Board[i,1].Pos:=Point(FSize*i, FSize*1);
 end;
 
 //set white Pices
 for i:=0 to 7 do
 begin
-  new(piece);
-  piece^.Piece:=TStartWhitePieces[i+1];
-  piece^.Color:='white';
-  piece^.Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartWhitePieces[i+1]+'White.svg');
-  piece^.BMP:=TBGRABitmap.Create;
-  piece^.BMP.SetSize(FSize,FSize);
-  piece^.Image.StretchDraw(Board[i,7].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
-  piece^.MoveCount:=0;
-  piece^.Field:=BoardDesc[i,7];
-  piece^.Pos:=Point(FSize*i, FSize*7);
-  piece^.Tied:=false;
-  Board[i,7]:=piece;
+  Board[i,7].Piece:=TStartWhitePieces[i+1];
+  Board[i,7].Color:='white';
+  Board[i,7].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartWhitePieces[i+1]+'White.svg');
+  Board[i,7].BMP:=TBGRABitmap.Create;
+  Board[i,7].BMP.SetSize(FSize,FSize);
+  Board[i,7].Image.StretchDraw(Board[i,7].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+  Board[i,7].MoveCount:=0;
+  Board[i,7].Field:=BoardDesc[i,7];
+  Board[i,7].Pos:=Point(FSize*i, FSize*7);
 //set black Pices
-  new(piece);
-  piece^.Piece:=TStartBlackPieces[i+1];
-  piece^.Color:='black';
-  piece^.Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartBlackPieces[i+1]+'Black.svg');
-  piece^.BMP:=TBGRABitmap.Create;
-  piece^.BMP.SetSize(FSize,FSize);
-  piece^.Image.StretchDraw(Board[i,0].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
-  piece^.MoveCount:=0;
-  piece^.Field:=BoardDesc[i,0];
-  piece^.Pos:=Point(FSize*i, 0);
-  piece^.Tied:=false;
-  Board[i,0]:=piece;
+  Board[i,0].Piece:=TStartBlackPieces[i+1];
+  Board[i,0].Color:='black';
+  Board[i,0].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartBlackPieces[i+1]+'Black.svg');
+  Board[i,0].BMP:=TBGRABitmap.Create;
+  Board[i,0].BMP.SetSize(FSize,FSize);
+  Board[i,0].Image.StretchDraw(Board[i,0].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+  Board[i,0].MoveCount:=0;
+  Board[i,0].Field:=BoardDesc[i,0];
+  Board[i,0].Pos:=Point(FSize*i, 0);
 end;
 
 end;
@@ -524,6 +512,9 @@ procedure TBoard.SetVariables();
 begin
 
 FBottomColor := 'white';
+
+Pieces[0]:='Pawn'; Pieces[1]:='Rook'; Pieces[2]:='Knight'; Pieces[3]:='Bishop';
+Pieces[4]:='Queen'; Pieces[5]:='King'; Pieces[6]:='Bishop'; Pieces[7]:='Knight'; Pieces[8]:='Rook';
 
 BoardDesc[0,0]:='A8';BoardDesc[1,0]:='B8';BoardDesc[2,0]:='C8';BoardDesc[3,0]:='D8';BoardDesc[4,0]:='E8';BoardDesc[5,0]:='F8';BoardDesc[6,0]:='G8';BoardDesc[7,0]:='H8';
 BoardDesc[0,1]:='A7';BoardDesc[1,1]:='B7';BoardDesc[2,1]:='C7';BoardDesc[3,1]:='D7';BoardDesc[4,1]:='E7';BoardDesc[5,1]:='F7';BoardDesc[6,1]:='G7';BoardDesc[7,1]:='H7';
@@ -534,6 +525,8 @@ BoardDesc[0,5]:='A3';BoardDesc[1,5]:='B3';BoardDesc[2,5]:='C3';BoardDesc[3,5]:='
 BoardDesc[0,6]:='A2';BoardDesc[1,6]:='B2';BoardDesc[2,6]:='C2';BoardDesc[3,6]:='D2';BoardDesc[4,6]:='E2';BoardDesc[5,6]:='F2';BoardDesc[6,6]:='G2';BoardDesc[7,6]:='H2';
 BoardDesc[0,7]:='A1';BoardDesc[1,7]:='B1';BoardDesc[2,7]:='C1';BoardDesc[3,7]:='D1';BoardDesc[4,7]:='E1';BoardDesc[5,7]:='F1';BoardDesc[6,7]:='G1';BoardDesc[7,7]:='H1';
 
+PiecesBlack[0]:='Pawn';PiecesBlack[1]:='Rook';PiecesBlack[2]:='Knight';PiecesBlack[3]:='Bishop';
+PiecesBlack[4]:='King';PiecesBlack[5]:='Queen';PiecesBlack[6]:='Bishop';PiecesBlack[7]:='Knight';PiecesBlack[8]:='Rook';
 
 end;
 
