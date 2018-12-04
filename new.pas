@@ -1,6 +1,11 @@
 TPossibleMoves = array of TPoint;
 PossibleMoves:TPossibleMoves;
 
+procedure TBoard.AddPossibleMove(move:TPoint);
+begin
+  SetLength(PossibleMoves,Length(PossibleMoves)+1);
+  PossibleMoves[High(PossibleMoves)]:=move;
+end;
 
 function TBoard.RookMoves(field:TPoint):TPossibleMoves;
 var
@@ -13,8 +18,7 @@ for i:=field.x to 7 do
   begin
     if (Board[i,field.y]='') then
     begin
-      SetLength(PossibleMoves,Length(PossibleMoves)+1);
-      PossibleMoves[High(PossibleMoves)]:=Point(i,field.y);
+      AddPossibleMove(Point(i,field.y));
     end
     else
     begin
@@ -26,8 +30,7 @@ for i:=field.x to 7 do
         end
         else
         begin
-          SetLength(PossibleMoves,Length(PossibleMoves)+1);
-          PossibleMoves[High(PossibleMoves)]:=Point(i,field.y);
+          AddPossibleMove(Point(i,field.y));
           Break;
         end;
       end;
