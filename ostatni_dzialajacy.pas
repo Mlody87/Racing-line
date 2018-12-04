@@ -7,6 +7,10 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls, BGRABitmap, BGRASVG, BGRABitmapTypes;
 
+const
+  TStartWhitePieces : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
+  TStartBlackPieces : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook');
+
 type
 
   TPiece = record
@@ -458,9 +462,9 @@ FSize:=FieldSize();
 for i:=0 to 7 do
 begin
   //set white Pawns
-  Board[i,6].Piece:=Pieces[0];
+  Board[i,6].Piece:=TStartWhitePieces[0];
   Board[i,6].Color:='white';
-  Board[i,6].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[0]+'White.svg');
+  Board[i,6].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartWhitePieces[0]+'White.svg');
   Board[i,6].BMP:=TBGRABitmap.Create;
   Board[i,6].BMP.SetSize(FSize,FSize);
   Board[i,6].Image.StretchDraw(Board[i,6].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
@@ -468,9 +472,9 @@ begin
   Board[i,6].Field:=BoardDesc[i,6];
   Board[i,6].Pos:=Point(FSize*i, FSize*6);
   //set black Pawns
-  Board[i,1].Piece:=Pieces[0];
+  Board[i,1].Piece:=TStartBlackPieces[0];
   Board[i,1].Color:='black';
-  Board[i,1].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[0]+'Black.svg');
+  Board[i,1].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartBlackPieces[0]+'Black.svg');
   Board[i,1].BMP:=TBGRABitmap.Create;
   Board[i,1].BMP.SetSize(FSize,FSize);
   Board[i,1].Image.StretchDraw(Board[i,1].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
@@ -482,9 +486,9 @@ end;
 //set white Pices
 for i:=0 to 7 do
 begin
-  Board[i,7].Piece:=Pieces[i+1];
+  Board[i,7].Piece:=TStartWhitePieces[i+1];
   Board[i,7].Color:='white';
-  Board[i,7].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[i+1]+'White.svg');
+  Board[i,7].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartWhitePieces[i+1]+'White.svg');
   Board[i,7].BMP:=TBGRABitmap.Create;
   Board[i,7].BMP.SetSize(FSize,FSize);
   Board[i,7].Image.StretchDraw(Board[i,7].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
@@ -492,9 +496,9 @@ begin
   Board[i,7].Field:=BoardDesc[i,7];
   Board[i,7].Pos:=Point(FSize*i, FSize*7);
 //set black Pices
-  Board[i,0].Piece:=PiecesBlack[i+1];
+  Board[i,0].Piece:=TStartBlackPieces[i+1];
   Board[i,0].Color:='black';
-  Board[i,0].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[i+1]+'Black.svg');
+  Board[i,0].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartBlackPieces[i+1]+'Black.svg');
   Board[i,0].BMP:=TBGRABitmap.Create;
   Board[i,0].BMP.SetSize(FSize,FSize);
   Board[i,0].Image.StretchDraw(Board[i,0].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
