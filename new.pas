@@ -7,7 +7,7 @@ begin
   PossibleMoves[High(PossibleMoves)]:=move;
 end;
 
-function TBoard.RookMoves(field:TPoint):TPossibleMoves;
+procedure TBoard.RookMoves(field:TPoint);
 var
 color:string;
 i:integer;
