@@ -7,15 +7,21 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls, BGRABitmap, BGRASVG, BGRABitmapTypes;
 
+const
+  TStartWhitePieces : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
+  TStartBlackPieces : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook');
+
 type
 
   TPiece = record
   Piece:string;
   Color:string;
   Image: TBGRASVG;
+  BMP:TBGRABitmap;
   MoveCount:integer;
   Field:string;
   Pos:TPoint;
+  Tied:boolean;
   end;
 
   TDAD = record
@@ -26,8 +32,13 @@ type
   end;
 
   TBoardDesc = array[0..7,0..7] of string;
-  TPieces = array[0..8] of string;
-  TBoardPieces = array[0..7,0..7] of TPiece;
+  TBoardPieces = array[0..7,0..7] of ^TPiece;
+
+  TColorMove = record
+    color:boolean;
+    from:Tpoint;
+    too:Tpoint;
+  end;
 
   TBoard = class(TPaintBox)
   private
@@ -38,8 +49,10 @@ type
   protected
     { Protected declarations }
     BoardDesc : TBoardDesc;
-        Pieces : TPieces;
-        PiecesBlack : TPieces;
+    BitmapBoard:TBitmap;
+    FirstRun:boolean;
+    ResizeW,ResizeH:integer;
+    ColorMove:TColorMove;
 
     procedure Paint(); override;
     function BoardRotation(arr : TBoardDesc): TBoardDesc;
@@ -58,6 +71,9 @@ type
     procedure Move(From,Too:string);
     procedure ClearField(Field:TPoint);
     procedure AssignField(FFromIJ,FToIJ:TPoint);
+    function IsWhiteBool(tmpcolor:boolean):boolean;
+    procedure GenerateBitmapBoard();
+    function CalculateFieldPos(point:TPoint):TRect;
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -66,6 +82,7 @@ type
     procedure MouseDown(Button: TMouseButton;Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer); override;
+    procedure CheckResize;
   published
     { Published declarations }
   end;
@@ -80,10 +97,13 @@ begin
 end;
 
 function TBoard.GetFieldIJ(X,Y:integer):TPoint;
+var
+FSize:integer;
 begin
+  FSize:=FieldSize();
 
-  GetFieldIJ.X:=(X div FieldSize());
-  GetFieldIJ.Y:=(Y div FieldSize());
+  GetFieldIJ.X:=(X div FSize);
+  GetFieldIJ.Y:=(Y div FSize);
 
 end;
 
@@ -91,12 +111,13 @@ end;
 function TBoard.GetFieldXY(X,Y:integer):TPoint;
 var
 Point:TPoint;
+FSize:integer;
 begin
-
+  FSize:=FieldSize();
   Point:=GetFieldIJ(X,Y);
 
-  GetFieldXY.X:=(Point.X)*FieldSize();
-  GetFieldXY.Y:=(Point.Y)*FieldSize();
+  GetFieldXY.X:=(Point.X)*FSize;
+  GetFieldXY.Y:=(Point.Y)*FSize;
 
 end;
 
@@ -123,32 +144,40 @@ for i:=0 to 7 do
 end;
 
 procedure TBoard.DADCancelMoving();
+var
+FSize:integer;
 begin
-  Board[DAD.DADCordsIJ.X,DAD.DADCordsIJ.Y].Pos:=Point(FieldSize()*DAD.DADCordsIJ.X, FieldSize()*DAD.DADCordsIJ.Y);
+  FSize:=FieldSize();
+  Board[DAD.DADCordsIJ.X,DAD.DADCordsIJ.Y].Pos:=Point(FSize*DAD.DADCordsIJ.X, FSize*DAD.DADCordsIJ.Y);
   DAD.DAD:=false;
   Self.Repaint;
 end;
 
 procedure TBoard.ClearField(Field:TPoint);
+var
+FSize:integer;
 begin
+  FSize:=FieldSize();
   Board[Field.X,Field.Y].Piece:='';
   Board[Field.X,Field.Y].Color:='';
-//  Board[Field.X,Field.Y].Image.Free;
-//  Board[Field.X,Field.Y].Image:=nil;
   Board[Field.X,Field.Y].MoveCount:=0;
   Board[Field.X,Field.Y].Field:='';
-  Board[Field.X,Field.Y].Pos:=Point(FieldSize()*Field.x, FieldSize()*Field.y);
+  Board[Field.X,Field.Y].Pos:=Point(FSize*Field.x, FSize*Field.y);
 end;
 
 procedure TBoard.AssignField(FFromIJ,FToIJ:TPoint);
+var
+FSize:integer;
 begin
+FSize:=FieldSize();
 Board[FToIJ.X,FToIJ.Y].Piece:=Board[FFromIJ.X,FFromIJ.Y].Piece;
 Board[FToIJ.X,FToIJ.Y].Color:=Board[FFromIJ.X,FFromIJ.Y].Color;
 Board[FToIJ.X,FToIJ.Y].Image:=TBGRASVG.Create;
 Board[FToIJ.X,FToIJ.Y].Image:=Board[FFromIJ.X,FFromIJ.Y].Image;
+Board[FToIJ.X,FToIJ.Y].BMP:=Board[FFromIJ.X,FFromIJ.Y].BMP;
 Board[FToIJ.X,FToIJ.Y].MoveCount:=Board[FFromIJ.X,FFromIJ.Y].MoveCount+1;
 Board[FToIJ.X,FToIJ.Y].Field:=BoardDesc[FToIJ.X,FToIJ.Y];
-Board[FToIJ.X,FToIJ.Y].Pos:=Point(FieldSize()*FToIJ.X, FieldSize()*FToIJ.Y);
+Board[FToIJ.X,FToIJ.Y].Pos:=Point(FSize*FToIJ.X, FSize*FToIJ.Y);
 end;
 
 procedure TBoard.Move(From,Too:string);
@@ -170,6 +199,34 @@ Self.Invalidate;
 
 end;
 
+
+procedure TBoard.CheckResize();
+var
+i,j,size:integer;
+begin
+
+    if ((ResizeW = Width) and (ResizeH = Height)) then Exit;
+
+    ResizeW:=Width;
+    ResizeH:=Height;
+
+    size:=FieldSize();
+
+    for i:=0 to 7 do
+      for j:=0 to 7 do
+        begin
+          if Board[i,j].Piece<>'' then
+          begin
+            Board[i,j].Pos:=Point(size*i, size*j);
+            Board[i,j].BMP.SetSize(size,size);
+            Board[i,j].Image.StretchDraw(Board[i,j].BMP.Canvas2D, taCenter, tlCenter, 0,0,size,size);
+          end;
+        end;
+
+    if (FirstRun=false) then
+       GenerateBitmapBoard();
+
+end;
 
 procedure TBoard.MouseDown(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 var
@@ -198,30 +255,14 @@ begin
 
    if (DAD.DAD) then
             begin
-            if X>DAD.DADBoardPoint.X then
-            begin
+
                  Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x+(X-DAD.DADBoardPoint.x);
-                 DAD.DADBoardPoint.x:=X;
-            end;
-            if X<DAD.DADBoardPoint.X then
-            begin
-                 Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x-(DAD.DADBoardPoint.x-X);
-                 DAD.DADBoardPoint.x:=X;
-            end;
-            if Y<DAD.DADBoardPoint.Y then
-            begin
-                 Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y-(DAD.DADBoardPoint.y-Y);
-                 DAD.DADBoardPoint.y:=Y;
-            end;
-            if Y>DAD.DADBoardPoint.Y then
-            begin
                  Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y+(Y-DAD.DADBoardPoint.y);
+                 DAD.DADBoardPoint.x:=X;
                  DAD.DADBoardPoint.y:=Y;
-            end;
 
             Self.Invalidate;
             end;
-
 
 end;
 
@@ -249,14 +290,15 @@ end;
   end
   else
   begin
+    ColorMove.color:=true;
+    ColorMove.from:=DAD.DADCordsIJ;
+    ColorMove.too:=ActualField;
     Move(GetFieldName(DAD.DADCordsIJ),GetFieldName(ActualField));
   end;
 
 DAD.DAD:=False;
 
 end;
-
-
 
 end;
 
@@ -278,7 +320,9 @@ function TBoard.BoardRotationPieces(arr : TBoardPieces): TBoardPieces;
 var
 X,Y,i,j:integer;
 Temp:TPiece;
+FSize:integer;
 begin
+FSize:=FieldSize();
 for X := 0 to 3 do
   for Y := 0 to 7 do
   begin
@@ -288,7 +332,7 @@ for X := 0 to 3 do
 
     for i:=0 to 7 do
         for j:=0 to 7 do
-            BoardRotationPieces[i,j].Pos:=Point(FieldSize()*i, FieldSize()*j);
+            BoardRotationPieces[i,j].Pos:=Point(FSize*i, FSize*j);
 
   end;
 end;
@@ -298,7 +342,52 @@ begin
 FieldSize := Round(Width div 8);
 end;
 
+function TBoard.IsWhiteBool(tmpcolor:boolean):boolean;
+begin
+    if tmpcolor then
+  begin
+     IsWhiteBool:=false;
+  end
+  else
+  begin
+     IsWhiteBool:=true;
+  end;
+end;
+
+function TBoard.CalculateFieldPos(point:TPoint):TRect;
+var
+size:integer;
+begin
+  size:=FieldSize();
+
+  CalculateFieldPos.Left:=(Size*point.x);
+  CalculateFieldPos.Top:=(Size*point.y);
+  CalculateFieldPos.Right:=(Size*point.x)+(Size+1);
+  CalculateFieldPos.Bottom:=(Size*point.y)+(Size+1);
+end;
+
 procedure TBoard.DrawBoard();
+var
+field:TRect;
+begin
+Canvas.Clear;
+Canvas.Draw(0,0,BitmapBoard);
+
+if ColorMove.color then
+begin
+  Canvas.Pen.Color := clWhite;  //AAFFFF
+  Canvas.brush.Color := TColor($0036bab9);
+
+  field:=CalculateFieldPos(ColorMove.from);
+  Canvas.rectangle(field);
+
+  field:=CalculateFieldPos(ColorMove.too);
+  Canvas.rectangle(field);
+end;
+
+end;
+
+procedure TBoard.GenerateBitmapBoard();
 var
 iswhite:boolean;
 i,j:integer;
@@ -306,8 +395,13 @@ field:TRect;
 color1,color2:TColor;
 begin
 
+
+BitmapBoard.Clear;
+BitmapBoard.Width:=Width;
+BitmapBoard.Height:=Height;
+
 iswhite:=false;
-Canvas.Pen.Color := clWhite;
+BitmapBoard.Canvas.Pen.Color := clWhite;
 
 
 color1:=(181 shl 16)+ (217 shl 8)+ 240;
@@ -316,106 +410,112 @@ color2:=(99 shl 16)+ (136 shl 8)+ 181;
 for i:=0 to 7 do
 begin
 
-  if iswhite then
-  begin
-     iswhite:=false;
-  end
-  else
-  begin
-     iswhite:=true;
-  end;
+iswhite:=IsWhiteBool(iswhite);
 
-  for j:=0 to 7 do
+for j:=0 to 7 do
   begin
 
-     field.Left:=(FieldSize()*j);
-     field.Top:=(FieldSize()*i);
-     field.Right:=(FieldSize()*j)+(FieldSize()+1);
-     field.Bottom:=(FieldSize()*i)+(FieldSize()+1);
+  field:=CalculateFieldPos(Point(i,j));
 
      if iswhite then
      begin
-       Canvas.brush.Color := color1; //cl3DLight;
+       BitmapBoard.Canvas.brush.Color := color1; //cl3DLight;
      end
      else
      begin
-       Canvas.brush.Color := color2; //clAppWorkspace;
+       BitmapBoard.Canvas.brush.Color := color2; //clAppWorkspace;
      end;
 
-     Canvas.rectangle(field);
+     BitmapBoard.Canvas.rectangle(field);
 
-      if iswhite then
-      begin
-         iswhite:=false;
-      end
-      else
-      begin
-         iswhite:=true;
-      end;
+     iswhite:=IsWhiteBool(iswhite);
 
       end;
    end;
+
+DrawLines();
+
 end;
+
 
 procedure TBoard.DrawLines();
 begin
 
-Canvas.Pen.Color := clBlack;
+BitmapBoard.Canvas.Pen.Color := clBlack;
 
-Canvas.MoveTo(0,0);
-Canvas.LineTo(Width-1,0);
-
-Canvas.MoveTo(Width-1,0);
-Canvas.LineTo(Width-1,Width-1);
-
-Canvas.MoveTo(0,0);
-Canvas.LineTo(0,Width-1);
-
-Canvas.MoveTo(0,Width-1);
-Canvas.LineTo(Width-1,Width-1);
+BitmapBoard.Canvas.Line(0,0,Width-1,0);
+BitmapBoard.Canvas.Line(Width-1,0,Width-1,Width-1);
+BitmapBoard.Canvas.Line(0,0,0,Width-1);
+BitmapBoard.Canvas.Line(0,Width-1,Width-1,Width-1);
 
 end;
 
 
 procedure TBoard.SetStartPosition();
 var
-i:integer;
+i,FSize:integer;
+piece:^TPiece;
 begin
+FSize:=FieldSize();
 
 for i:=0 to 7 do
 begin
   //set white Pawns
-  Board[i,6].Piece:=Pieces[0];
-  Board[i,6].Color:='white';
-  Board[i,6].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[0]+'White.svg');
-  Board[i,6].MoveCount:=0;
-  Board[i,6].Field:=BoardDesc[i,6];
-  Board[i,6].Pos:=Point(FieldSize()*i, FieldSize()*6);
+  new(piece);
+  piece^.Piece:=TStartWhitePieces[0];
+  piece^.Color:='white';
+  piece^.Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartWhitePieces[0]+'White.svg');
+  piece^.BMP:=TBGRABitmap.Create;
+  piece^.BMP.SetSize(FSize,FSize);
+  piece^.Image.StretchDraw(Board[i,6].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+  piece^.MoveCount:=0;
+  piece^.Field:=BoardDesc[i,6];
+  piece^.Pos:=Point(FSize*i, FSize*6);
+  piece^.Tied:=false;
+  Board[i,6]:=piece;
   //set black Pawns
-  Board[i,1].Piece:=Pieces[0];
-  Board[i,1].Color:='black';
-  Board[i,1].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[0]+'Black.svg');
-  Board[i,1].MoveCount:=0;
-  Board[i,1].Field:=BoardDesc[i,1];
-  Board[i,1].Pos:=Point(FieldSize()*i, FieldSize()*1);
+  new(piece);
+  piece^.Piece:=TStartBlackPieces[0];
+  piece^.Color:='black';
+  piece^.Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartBlackPieces[0]+'Black.svg');
+  piece^.BMP:=TBGRABitmap.Create;
+  piece^.BMP.SetSize(FSize,FSize);
+  piece^.Image.StretchDraw(Board[i,1].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+  piece^.MoveCount:=0;
+  piece^.Field:=BoardDesc[i,1];
+  piece^.Pos:=Point(FSize*i, FSize*1);
+  piece^.Tied:=false;
+  Board[i,1]:=piece;
 end;
 
 //set white Pices
 for i:=0 to 7 do
 begin
-  Board[i,7].Piece:=Pieces[i+1];
-  Board[i,7].Color:='white';
-  Board[i,7].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[i+1]+'White.svg');
-  Board[i,7].MoveCount:=0;
-  Board[i,7].Field:=BoardDesc[i,7];
-  Board[i,7].Pos:=Point(FieldSize()*i, FieldSize()*7);
+  new(piece);
+  piece^.Piece:=TStartWhitePieces[i+1];
+  piece^.Color:='white';
+  piece^.Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartWhitePieces[i+1]+'White.svg');
+  piece^.BMP:=TBGRABitmap.Create;
+  piece^.BMP.SetSize(FSize,FSize);
+  piece^.Image.StretchDraw(Board[i,7].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+  piece^.MoveCount:=0;
+  piece^.Field:=BoardDesc[i,7];
+  piece^.Pos:=Point(FSize*i, FSize*7);
+  piece^.Tied:=false;
+  Board[i,7]:=piece;
 //set black Pices
-  Board[i,0].Piece:=PiecesBlack[i+1];
-  Board[i,0].Color:='black';
-  Board[i,0].Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+Pieces[i+1]+'Black.svg');
-  Board[i,0].MoveCount:=0;
-  Board[i,0].Field:=BoardDesc[i,0];
-  Board[i,0].Pos:=Point(FieldSize()*i, 0);
+  new(piece);
+  piece^.Piece:=TStartBlackPieces[i+1];
+  piece^.Color:='black';
+  piece^.Image:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+TStartBlackPieces[i+1]+'Black.svg');
+  piece^.BMP:=TBGRABitmap.Create;
+  piece^.BMP.SetSize(FSize,FSize);
+  piece^.Image.StretchDraw(Board[i,0].BMP.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+  piece^.MoveCount:=0;
+  piece^.Field:=BoardDesc[i,0];
+  piece^.Pos:=Point(FSize*i, 0);
+  piece^.Tied:=false;
+  Board[i,0]:=piece;
 end;
 
 end;
@@ -424,9 +524,6 @@ procedure TBoard.SetVariables();
 begin
 
 FBottomColor := 'white';
-
-Pieces[0]:='Pawn'; Pieces[1]:='Rook'; Pieces[2]:='Knight'; Pieces[3]:='Bishop';
-Pieces[4]:='Queen'; Pieces[5]:='King'; Pieces[6]:='Bishop'; Pieces[7]:='Knight'; Pieces[8]:='Rook';
 
 BoardDesc[0,0]:='A8';BoardDesc[1,0]:='B8';BoardDesc[2,0]:='C8';BoardDesc[3,0]:='D8';BoardDesc[4,0]:='E8';BoardDesc[5,0]:='F8';BoardDesc[6,0]:='G8';BoardDesc[7,0]:='H8';
 BoardDesc[0,1]:='A7';BoardDesc[1,1]:='B7';BoardDesc[2,1]:='C7';BoardDesc[3,1]:='D7';BoardDesc[4,1]:='E7';BoardDesc[5,1]:='F7';BoardDesc[6,1]:='G7';BoardDesc[7,1]:='H7';
@@ -437,8 +534,6 @@ BoardDesc[0,5]:='A3';BoardDesc[1,5]:='B3';BoardDesc[2,5]:='C3';BoardDesc[3,5]:='
 BoardDesc[0,6]:='A2';BoardDesc[1,6]:='B2';BoardDesc[2,6]:='C2';BoardDesc[3,6]:='D2';BoardDesc[4,6]:='E2';BoardDesc[5,6]:='F2';BoardDesc[6,6]:='G2';BoardDesc[7,6]:='H2';
 BoardDesc[0,7]:='A1';BoardDesc[1,7]:='B1';BoardDesc[2,7]:='C1';BoardDesc[3,7]:='D1';BoardDesc[4,7]:='E1';BoardDesc[5,7]:='F1';BoardDesc[6,7]:='G1';BoardDesc[7,7]:='H1';
 
-PiecesBlack[0]:='Pawn';PiecesBlack[1]:='Rook';PiecesBlack[2]:='Knight';PiecesBlack[3]:='Bishop';
-PiecesBlack[4]:='King';PiecesBlack[5]:='Queen';PiecesBlack[6]:='Bishop';PiecesBlack[7]:='Knight';PiecesBlack[8]:='Rook';
 
 end;
 
@@ -446,7 +541,6 @@ end;
 procedure TBoard.DrawPosition();
 var
 i,j:integer;
-BMP:TBGRABitmap;
 begin
 
    for i:=0 to 7 do
@@ -455,30 +549,24 @@ begin
        begin
        if (Board[i,j].Piece<>'') then
        begin
-
-         BMP:=TBGRABitmap.Create;
-
-         BMP.SetSize(FieldSize(),FieldSize());
-
-         Board[i,j].Image.StretchDraw(BMP.Canvas2D, taCenter, tlCenter, 0,0,FieldSize(),FieldSize());
-         Canvas.Draw(Board[i,j].Pos.x, Board[i,j].Pos.y, BMP.Bitmap);
-         BMP.Free;
-
-           //   Canvas.TextOut(Board[i,j].Pos.x,Board[i,j].Pos.y,BoardDesc[i,j]);
+         Canvas.Draw(Board[i,j].Pos.x, Board[i,j].Pos.y, Board[i,j].BMP.Bitmap);
        end;
    end;
 
 end;
-
 end;
 
 constructor TBoard.Create(AOwner : TComponent);
 begin
   inherited Create(AOwner);
-  Self.Width:=500;
-  Self.Height:=500;
+  Self.Width:=496;
+  Self.Height:=496;
+  ResizeW:=496;
+  ResizeH:=496;
   SetVariables();
   SetStartPosition();
+  FirstRun:=true;
+  ColorMove.color:=false;
 
 end;
 
@@ -503,8 +591,15 @@ end;
 
 procedure TBoard.Paint();
 begin
+  if FirstRun then
+    begin
+         BitmapBoard:=TBitmap.Create();
+         GenerateBitmapBoard();
+         FirstRun:=false;
+    end;
+
+CheckResize();
 DrawBoard();
-DrawLines();
 DrawPosition();
 
 end;
