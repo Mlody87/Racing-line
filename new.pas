@@ -1,5 +1,6 @@
-TPossibleMoves = array of string;
+TPossibleMoves = array of TPoint;
 PossibleMoves:TPossibleMoves;
+
 
 function TBoard.RookMoves(field:TPoint):TPossibleMoves;
 var
@@ -10,9 +11,16 @@ color:=Board[field.x,field.y].color;
 
 for i:=field.x to 7 do
   begin
-    
+    if (Board[i,field.y]='') then
+    begin
+      SetLength(PossibleMoves,Length(PossibleMoves)+1);
+      PossibleMoves[High(PossibleMoves)]:=Point(i,field.y);
+    end
+    else
+    begin
+      
+    end;
   end;
-
 
 
 end;
