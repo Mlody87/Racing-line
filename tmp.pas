@@ -20,6 +20,6 @@ end;
   readln;
   
   
-  !!!!!!!!
+ // !!!!!!!! to dziala
   Convert to string : WriteStr(AStringVariable, AComponentStyleVariable)
     Convert from string : ReadStr(AStringVariable, AComponentStyleVariable)
