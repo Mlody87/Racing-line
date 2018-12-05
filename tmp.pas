@@ -23,3 +23,17 @@ end;
  // !!!!!!!! to dziala
   Convert to string : WriteStr(AStringVariable, AComponentStyleVariable)
     Convert from string : ReadStr(AStringVariable, AComponentStyleVariable)
+
+
+
+program HelloWorld;
+uses
+typinfo;
+type
+test = (jeden, dwa);
+var
+s:string;
+begin
+    s:=GetEnumName(TypeInfo(test),1);
+    write(s);
+end.
