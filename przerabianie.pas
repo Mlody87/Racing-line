@@ -13,7 +13,7 @@ const
 
 type
 
-  TPieces = (Pawn, Rook, Knight, Bishop, Queen, King);
+  TPieces = (Pawn=0, Rook=1, Knight=2, Bishop=3, Queen=4, King=5);
 
   TPieceColor = (White, Black);
 
@@ -31,6 +31,13 @@ type
   FromCordsXY:TPoint;
   BoardPoint:TPoint;
   end;
+  
+  TPieceImage = record
+    svg:TBGRASVG;
+    bmp:TBGRABitmap;
+  end;
+  
+  TPiecesImages = array[0..5] of TPieceImage;
 
   TBoardDesc = array[0..7,0..7] of string;
   TBoardPieces = array[0..7,0..7] of ^TPiece;
@@ -46,6 +53,7 @@ type
     { Private declarations }
     FBottomColor:String;
     Board:TBoardPieces;
+    PiecesImages:TPiecesImages;
     DAD:TDAD;
   protected
     { Protected declarations }
