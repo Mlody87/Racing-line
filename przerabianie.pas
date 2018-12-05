@@ -455,40 +455,49 @@ end;
 procedure TBoard.SetStartPosition();
 var
 i:integer;
+tmp:^TPiece;
 begin
 
 for i:=0 to 7 do
 begin
   //set white Pawns
-  ReadStr(TStartWhitePieces[0], Board[i,6].Piece);
-  Board[i,6].Color:=White;
-  Board[i,6].MoveCount:=0;
-  Board[i,6].Tied:=false;
-  Board[i,6].DAD:=false;
+  new(tmp);
+  ReadStr(TStartWhitePieces[0], tmp.Piece);
+  tmp.Color:=White;
+  tmp.MoveCount:=0;
+  tmp.Tied:=false;
+  tmp.DAD:=false;
+  Board[i,6]:=tmp;
   
   //set black Pawns
-  ReadStr(TStartBlackPieces[0], Board[i,1].Piece);
-  Board[i,1].Color:=White;
-  Board[i,1].MoveCount:=0;
-  Board[i,1].Tied:=false;
-  Board[i,1].DAD:=false;
+  new(tmp);
+  ReadStr(TStartBlackPieces[0], tmp.Piece);
+  tmp.Color:=White;
+  tmp.MoveCount:=0;
+  tmp.Tied:=false;
+  tmp.DAD:=false;
+  Board[i,1]:=tmp;
 end;
 
 //set white Pices
 for i:=0 to 7 do
 begin
-  ReadStr(TStartWhitePieces[i+1], Board[i,7].Piece);
-  Board[i,7].Color:=White;
-  Board[i,7].MoveCount:=0;
-  Board[i,7].Tied:=false;
-  Board[i,7].DAD:=false;
+  new(tmp);
+  ReadStr(TStartWhitePieces[i+1], tmp.Piece);
+  tmp.Color:=White;
+  tmp.MoveCount:=0;
+  tmp.Tied:=false;
+  tmp.DAD:=false;
+  Board[i,7]:=tmp;
 
 //set black Pices
-  ReadStr(TStartBlackPieces[i+1], Board[i,0].Piece);
-  Board[i,0].Color:=White;
-  Board[i,0].MoveCount:=0;
-  Board[i,0].Tied:=false;
-  Board[i,0].DAD:=false;
+  new(tmp);
+  ReadStr(TStartBlackPieces[i+1], tmp.Piece);
+  tmp.Color:=White;
+  tmp.MoveCount:=0;
+  tmp.Tied:=false;
+  tmp.DAD:=false;
+  Board[i,0]:=tmp;
 end;
 
 end;
