@@ -53,7 +53,7 @@ type
     { Private declarations }
     FBottomColor:String;
     Board:TBoardPieces;
-    PiecesImages:TPiecesImages;
+    WhiteImages,BlackImages:TPiecesImages;
     DAD:TDAD;
   protected
     { Protected declarations }
@@ -375,6 +375,7 @@ begin
   CalculateFieldPos.Bottom:=(Size*point.y)+(Size+1);
 end;
 
+
 procedure TBoard.DrawBoard();
 var
 field:TRect;
@@ -509,6 +510,25 @@ begin
 end;
 
 end;
+
+
+procedure TBoard.LoadImagePieces();
+var
+i:integer;
+tmp:string;
+begin
+
+for i:=0 to 5 do
+begin
+
+  ReadString(tmp,TPieces(i));
+  WhiteImages[i].svg:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+tmp+'Black.svg');
+  WhiteImages[i].bmp:=
+   
+end;
+
+end;
+
 
 procedure TBoard.SetVariables();
 begin
