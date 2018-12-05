@@ -13,3 +13,13 @@ begin
   WriteStr(Value, myFavouriteColor); // converts TThreeColors to string
   Showmessage(Value);
 end;
+
+ ThisDay := tue;
+  s := GetEnumName(TypeInfo(TDays), Ord(ThisDay));
+  writeln(s);
+  readln;
+  
+  
+  !!!!!!!!
+  Convert to string : WriteStr(AStringVariable, AComponentStyleVariable)
+    Convert from string : ReadStr(AStringVariable, AComponentStyleVariable)
