@@ -13,7 +13,7 @@ const
 
 type
 
-  TPieces = (Pawn=0, Rook=1, Knight=2, Bishop=3, Queen=4, King=5);
+  TPieces = (Pawn, Rook, Knight, Bishop, Queen, King);
 
   TPieceColor = (White, Black);
 
@@ -21,15 +21,15 @@ type
   Piece:TPieces;
   Color:TPieceColor;
   MoveCount:integer;
-  Pos:TPoint;
+  DAD:boolean;
   Tied:boolean;
   end;
 
   TDAD = record
-  DAD:boolean;
-  DADCordsIJ:TPoint;
-  DADCordsXY:TPoint;
-  DADBoardPoint:TPoint;
+  active:boolean;
+  FromCordsIJ:TPoint;
+  FromCordsXY:TPoint;
+  BoardPoint:TPoint;
   end;
 
   TBoardDesc = array[0..7,0..7] of string;
