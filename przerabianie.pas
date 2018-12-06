@@ -23,7 +23,6 @@ type
 
   TDAD = record
   active:boolean;
-  Piece:Pointer;
   FromCordsIJ:TPoint;
   ActualCordsXY:TPoint;
   BoardPoint:TPoint;
@@ -238,6 +237,8 @@ begin
   DAD.ActualCordsXY:=GetFieldXY(X,Y);
 
   DAD.BoardPoint:=Point(X,Y);
+  
+  Board[DAD.FromCordsIJ.x,DAD.FromCordsIJ.y]^.DAD:=true;
 
 end;
 
@@ -287,7 +288,7 @@ begin
   end;
 
 DAD.active:=False;
-
+Board[DAD.FromCordsIJ.x,DAD.FromCordsIJ.y]^.DAD:=false;
 end;
 
 end;
