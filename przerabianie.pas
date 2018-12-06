@@ -29,7 +29,7 @@ type
   active:boolean;
   Piece:Pointer;
   FromCordsIJ:TPoint;
-  FromCordsXY:TPoint;
+  ActualCordsXY:TPoint;
   BoardPoint:TPoint;
   end;
   
@@ -156,40 +156,20 @@ for i:=0 to 7 do
 end;
 
 procedure TBoard.DADCancelMoving();
-var
-FSize:integer;
 begin
-  FSize:=FieldSize();
-  Board[DAD.DADCordsIJ.X,DAD.DADCordsIJ.Y].Pos:=Point(FSize*DAD.DADCordsIJ.X, FSize*DAD.DADCordsIJ.Y);
-  DAD.DAD:=false;
+  DAD.active:=false;
+  Board[DAD.FromCordsIJ.x,DAD.FromCordsIJ.y]^.DAD:=false;
   Self.Repaint;
 end;
 
 procedure TBoard.ClearField(Field:TPoint);
-var
-FSize:integer;
 begin
-  FSize:=FieldSize();
-  Board[Field.X,Field.Y].Piece:='';
-  Board[Field.X,Field.Y].Color:='';
-  Board[Field.X,Field.Y].MoveCount:=0;
-  Board[Field.X,Field.Y].Field:='';
-  Board[Field.X,Field.Y].Pos:=Point(FSize*Field.x, FSize*Field.y);
+  Board[Field.X,Field.Y]:=nil;
 end;
 
 procedure TBoard.AssignField(FFromIJ,FToIJ:TPoint);
-var
-FSize:integer;
 begin
-FSize:=FieldSize();
-Board[FToIJ.X,FToIJ.Y].Piece:=Board[FFromIJ.X,FFromIJ.Y].Piece;
-Board[FToIJ.X,FToIJ.Y].Color:=Board[FFromIJ.X,FFromIJ.Y].Color;
-Board[FToIJ.X,FToIJ.Y].Image:=TBGRASVG.Create;
-Board[FToIJ.X,FToIJ.Y].Image:=Board[FFromIJ.X,FFromIJ.Y].Image;
-Board[FToIJ.X,FToIJ.Y].BMP:=Board[FFromIJ.X,FFromIJ.Y].BMP;
-Board[FToIJ.X,FToIJ.Y].MoveCount:=Board[FFromIJ.X,FFromIJ.Y].MoveCount+1;
-Board[FToIJ.X,FToIJ.Y].Field:=BoardDesc[FToIJ.X,FToIJ.Y];
-Board[FToIJ.X,FToIJ.Y].Pos:=Point(FSize*FToIJ.X, FSize*FToIJ.Y);
+  Board[FToIJ.X,FToIJ.Y]:=Board[FFromIJ.X,FFromIJ.Y];
 end;
 
 procedure TBoard.Move(From,Too:string);
@@ -239,16 +219,16 @@ begin
 
   test:=GetFieldIJ(X,Y);
 
-  if Board[test.X,test.Y].Piece='' then
+  if Board[test.X,test.Y]=nil then
     Exit;
 
   DAD.DAD:=true;
 
-  DAD.DADCordsIJ:=test;
+  DAD.FromCordsIJ:=test;
 
-  DAD.DADCordsXY:=GetFieldXY(X,Y);
+  DAD.ActualCordsXY:=GetFieldXY(X,Y);
 
-  DAD.DADBoardPoint:=Point(X,Y);
+  DAD.BoardPoint:=Point(X,Y);
 
 end;
 
@@ -256,17 +236,15 @@ procedure TBoard.MouseMove(Shift: TShiftState; X,Y: Integer);
 begin
   inherited;
 
-   if (DAD.DAD) then
-            begin
+   if (DAD.active) then
+     begin
+       DAD.ActualCordsXY.X:=DAD.ActualCordsXY.X+(X-DAD.BoardPoint.X);
+       DAD.ActualCordsXY.Y:=DAD.ActualCordsXY.Y+(Y-DAD.BoardPoint.Y);                 
+       DAD.BoardPoint.x:=X;
+       DAD.BoardPoint.y:=Y;
 
-                 Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.x+(X-DAD.DADBoardPoint.x);
-                 Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y := Board[DAD.DADCordsIJ.x,DAD.DADCordsIJ.y].Pos.y+(Y-DAD.DADBoardPoint.y);
-                 DAD.DADBoardPoint.x:=X;
-                 DAD.DADBoardPoint.y:=Y;
-
-            Self.Invalidate;
-            end;
-
+       Self.Invalidate;
+     end;
 end;
 
 procedure TBoard.MouseUp(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
@@ -581,8 +559,8 @@ FSize:=FieldSize();
        
          if (Board[i,j]^.DAD=true) then
          begin
-           x:=DAD.BoardPoint.X;
-           y:=DAD.BoardPoint.Y;
+           x:=DAD.ActualCordsXY.X;
+           y:=DAD.ActualCordsXY.Y;
          end
          else
          begin
