@@ -113,7 +113,7 @@ type
     procedure QueenMoves(field:TPoint);
     procedure KingMoves(field:TPoint);
 
-    procedure VerticalMove(field:TPoint;stepX:integer;stepY:integer);
+    procedure CheckMove(field:TPoint;stepX:integer;stepY:integer);
     procedure AddLegalMove(point:TPoint);
     procedure ClearLegalMoves;
     procedure DrawLegalMoves;
@@ -395,6 +395,8 @@ begin
   Canvas.rectangle(field);
 end;
 
+DrawLines();
+
 end;
 
 procedure TBoard.GenerateBitmapBoard();
@@ -442,8 +444,6 @@ for j:=0 to 7 do
 
       end;
    end;
-
-DrawLines();
 
 end;
 
@@ -680,12 +680,10 @@ end;
 
 procedure TBoard.RookMoves(field:TPoint);
 begin
-
-  VerticalMove(field,1,0);
-  VerticalMove(field,-1,0);
-  VerticalMove(field,0,1);
-  VerticalMove(field,0,-1);
-
+  CheckMove(field,1,0);
+  CheckMove(field,-1,0);
+  CheckMove(field,0,1);
+  CheckMove(field,0,-1);
 end;
 
 procedure TBoard.KnightMoves(field:TPoint);
@@ -695,12 +693,22 @@ end;
 
 procedure TBoard.BishopMoves(field:TPoint);
 begin
-
+  CheckMove(field,1,1);
+  CheckMove(field,-1,-1);
+  CheckMove(field,-1,1);
+  CheckMove(field,1,-1);
 end;
 
 procedure TBoard.QueenMoves(field:TPoint);
 begin
-
+CheckMove(field,1,0);
+CheckMove(field,-1,0);
+CheckMove(field,0,1);
+CheckMove(field,0,-1);
+CheckMove(field,1,1);
+CheckMove(field,-1,-1);
+CheckMove(field,-1,1);
+CheckMove(field,1,-1);
 end;
 
 procedure TBoard.KingMoves(field:TPoint);
@@ -714,7 +722,7 @@ SetLength(LegalMoves, Length(LegalMoves)+1);
 LegalMoves[High(LegalMoves)]:=point;
 end;
 
-procedure TBoard.VerticalMove(field:TPoint;stepX:integer;stepY:integer);
+procedure TBoard.CheckMove(field:TPoint;stepX:integer;stepY:integer);
 var
 x,y:integer;
 begin
@@ -739,6 +747,7 @@ begin
 end;
 
 end;
+
 
 procedure TBoard.ClearLegalMoves;
 begin
