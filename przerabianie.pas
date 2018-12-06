@@ -180,9 +180,6 @@ begin
 FromIJ:=GetIJByName(From);
 ToIJ:=GetIJByName(Too);
 
-if Board[ToIJ.X,ToIJ.Y].Piece<> '' then
-  ClearField(ToIJ);
-
 AssignField(FromIJ,ToIJ);
 
 ClearField(FromIJ);
