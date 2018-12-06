@@ -27,6 +27,7 @@ type
 
   TDAD = record
   active:boolean;
+  Piece:Pointer;
   FromCordsIJ:TPoint;
   FromCordsXY:TPoint;
   BoardPoint:TPoint;
@@ -567,7 +568,7 @@ end;
 
 procedure TBoard.DrawPosition();
 var
-i,j,FSize:integer;
+i,j,x,y,FSize:integer;
 begin
 FSize:=FieldSize();
 
@@ -577,15 +578,26 @@ FSize:=FieldSize();
        begin
        if (Board[i,j]<>nil) then
        begin
-         if Board[i,j].Color=White then
+       
+         if (Board[i,j]^.DAD=true) then
          begin
-           Canvas.Draw(FSize*i, FSize*j, WhiteImages[Ord(Board[i,j].Piece)].bmp.Bitmap);         
+           x:=DAD.BoardPoint.X;
+           y:=DAD.BoardPoint.Y;
          end
          else
          begin
-           Canvas.Draw(FSize*i, FSize*j, BlackImages[Ord(Board[i,j].Piece)].bmp.Bitmap);           
+           x:=FSize*i;
+           y:=FSize*j;
          end;
-        
+       
+         if Board[i,j]^.Color=White then
+         begin
+           Canvas.Draw(x, y, WhiteImages[Ord(Board[i,j]^.Piece)].bmp.Bitmap);         
+         end
+         else
+         begin
+           Canvas.Draw(x, y, BlackImages[Ord(Board[i,j]^.Piece)].bmp.Bitmap);           
+         end;
        end;
    end;
 
