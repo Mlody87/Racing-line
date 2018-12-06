@@ -5,7 +5,7 @@ unit Board;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls, BGRABitmap, BGRASVG, BGRABitmapTypes;
+  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls, BGRABitmap, BGRASVG, BGRABitmapTypes,typinfo;
 
 const
   START_WHITE_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
@@ -83,6 +83,8 @@ type
     function IsWhiteBool(tmpcolor:boolean):boolean;
     procedure GenerateBitmapBoard();
     function CalculateFieldPos(point:TPoint):TRect;
+    procedure LoadPiecesImages();
+    procedure SetPiecesSize();
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -221,16 +223,7 @@ begin
 
     size:=FieldSize();
 
-    for i:=0 to 7 do
-      for j:=0 to 7 do
-        begin
-          if Board[i,j].Piece<>'' then
-          begin
-            Board[i,j].Pos:=Point(size*i, size*j);
-            Board[i,j].BMP.SetSize(size,size);
-            Board[i,j].Image.StretchDraw(Board[i,j].BMP.Canvas2D, taCenter, tlCenter, 0,0,size,size);
-          end;
-        end;
+    SetPiecesSize();
 
     if (FirstRun=false) then
        GenerateBitmapBoard();
@@ -511,20 +504,51 @@ end;
 
 end;
 
+procedure TBoard.SetPiecesSize();
+var
+i:integer;
+tmp:string;
+FSize:integer;
+begin
+FSize:=FieldSize();
 
-procedure TBoard.LoadImagePieces();
+//load white images
+for i:=0 to 5 do
+begin
+  tmp:=GetEnumName(TypeInfo(TPieces),i);
+  WhiteImages[i].bmp:=SetSize(FSize,FSize);
+  WhiteImages[i].svg.StretchDraw(WhiteImages[i].bmp.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+end;
+
+//load black images
+for i:=0 to 5 do
+begin
+  tmp:=GetEnumName(TypeInfo(TPieces),i);
+  BlackImages[i].bmp:=SetSize(FSize,FSize);
+  BlackImages[i].svg.StretchDraw(WhiteImages[i].bmp.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
+end;
+
+
+procedure TBoard.LoadPiecesImages();
 var
 i:integer;
 tmp:string;
 begin
 
+//load white images
 for i:=0 to 5 do
 begin
+  tmp:=GetEnumName(TypeInfo(TPieces),i);
+  WhiteImages[i].svg:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+tmp+'White.svg');
+  WhiteImages[i].bmp:=TBGRABitmap.Create;
+end;
 
-  ReadString(tmp,TPieces(i));
-  WhiteImages[i].svg:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+tmp+'Black.svg');
-  WhiteImages[i].bmp:=
-   
+//load black images
+for i:=0 to 5 do
+begin
+  tmp:=GetEnumName(TypeInfo(TPieces),i);
+  BlackImages[i].svg:=TBGRASVG.Create('C:\Users\Mlody\SzachownicaKomponent\img\'+tmp+'Black.svg');
+  BlackImages[i].bmp:=TBGRABitmap.Create;
 end;
 
 end;
@@ -604,6 +628,8 @@ begin
   if FirstRun then
     begin
          BitmapBoard:=TBitmap.Create();
+         LoadPiecesImages();
+         SetPiecesSize();
          GenerateBitmapBoard();
          FirstRun:=false;
     end;
