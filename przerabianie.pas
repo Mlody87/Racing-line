@@ -13,7 +13,7 @@ const
 
 type
 
-  TPieces = (Pawn=0, Rook=1, Knight=2, Bishop=3, Queen=4, King=5);
+  TPieces = (Pawn, Rook, Knight, Bishop, Queen, King);
 
   TPieceColor = (White, Black);
 
@@ -65,7 +65,7 @@ type
 
     procedure Paint(); override;
     function BoardRotation(arr : TBoardDesc): TBoardDesc;
-    function BoardRotationPieces(arr : TBoardPieces): TBoardPieces;
+    function BoardRotationPieces;
     function FieldSize():integer;
     procedure DrawBoard();
     procedure DrawLines();
@@ -371,7 +371,7 @@ Canvas.Draw(0,0,BitmapBoard);
 
 if ColorMove.color then
 begin
-  Canvas.Pen.Color := clWhite;  //AAFFFF
+  Canvas.Pen.Color := clWhite;
   Canvas.brush.Color := TColor($0036bab9);
 
   field:=CalculateFieldPos(ColorMove.from);
@@ -567,16 +567,25 @@ end;
 
 procedure TBoard.DrawPosition();
 var
-i,j:integer;
+i,j,FSize:integer;
 begin
+FSize:=FieldSize();
 
    for i:=0 to 7 do
    begin
        for j:=0 to 7 do
        begin
-       if (Board[i,j].Piece<>'') then
+       if (Board[i,j]<>nil) then
        begin
-         Canvas.Draw(Board[i,j].Pos.x, Board[i,j].Pos.y, Board[i,j].BMP.Bitmap);
+         if Board[i,j].Color=White then
+         begin
+           Canvas.Draw(FSize*i, FSize*j, WhiteImages[Ord(Board[i,j].Piece)].bmp.Bitmap);         
+         end
+         else
+         begin
+           Canvas.Draw(FSize*i, FSize*j, BlackImages[Ord(Board[i,j].Piece)].bmp.Bitmap);           
+         end;
+        
        end;
    end;
 
