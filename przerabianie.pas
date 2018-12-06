@@ -729,10 +729,11 @@ begin
 x:=field.x;
 y:=field.y;
 
-while ((x>0) and (x<7) and (y>0) and (y<7)) do
-begin
-  x:=x+stepX;
-  y:=y+stepY;
+x:=x+stepX;
+y:=y+stepY;
+
+while ((x>=0) and (x<=7) and (y>=0) and (y<=7)) do
+  begin
 
   if Board[x,y]=nil then
     begin
@@ -744,7 +745,10 @@ begin
       if Board[x,y]^.Color=Board[field.x,field.y]^.Color then Break;
     end;
 
-end;
+  x:=x+stepX;
+  y:=y+stepY;
+
+  end;
 
 end;
 
@@ -754,19 +758,30 @@ begin
   SetLength(LegalMoves,0);
 end;
 
+
 procedure TBoard.DrawLegalMoves;
 var
-i:integer;
+i,CentreX,CentreY,Radius:integer;
 field:TRect;
 begin
 
+Radius:=Round(FieldSize div 5);
+
 for i:=0 to Length(LegalMoves)-1 do
 begin
-  Canvas.Pen.Color := clWhite;
+  {Canvas.Pen.Color := clWhite;
   Canvas.brush.Color := TColor($0036bab9);
 
   field:=CalculateFieldPos(LegalMoves[i]);
-  Canvas.rectangle(field);
+  Canvas.rectangle(field); }
+
+
+  Canvas.pen.Color := clLtGray;
+  Canvas.brush.Color := clLtGray;
+  CentreX := LegalMoves[i].x*FieldSize() + round(FieldSize() div 2);
+  CentreY := LegalMoves[i].y*FieldSize() + round(FieldSize() div 2);
+  Canvas.ellipse(CentreX - Radius, CentreY - Radius,  CentreX + Radius, CentreY + Radius);
+
 end;
 
 end;
