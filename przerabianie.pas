@@ -318,24 +318,17 @@ for X := 0 to 3 do
   end;
 end;
 
-function TBoard.BoardRotationPieces(arr : TBoardPieces): TBoardPieces;
+function TBoard.BoardRotationPieces;
 var
-X,Y,i,j:integer;
-Temp:TPiece;
-FSize:integer;
+X,Y:integer;
+Temp:^TPiece;
 begin
-FSize:=FieldSize();
 for X := 0 to 3 do
   for Y := 0 to 7 do
   begin
-    Temp := arr[X, Y];
-    BoardRotationPieces[X, Y] := arr[7 - X, 7 - Y];
-    BoardRotationPieces[7 - X, 7 - Y] := Temp;
-
-    for i:=0 to 7 do
-        for j:=0 to 7 do
-            BoardRotationPieces[i,j].Pos:=Point(FSize*i, FSize*j);
-
+    Temp := Board[X, Y];
+    Board[X, Y] := Board[7 - X, 7 - Y];
+    Board[7 - X, 7 - Y] := Temp;
   end;
 end;
 
