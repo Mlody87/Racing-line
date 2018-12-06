@@ -253,18 +253,18 @@ ActualField:TPoint;
 begin
   inherited;
 
-if (DAD.DAD) then
+if (DAD.active) then
 begin
 
-if (X>Width)or(X<0)or(Y>Height)or(Y<0) then
-begin
+  if (X>Width)or(X<0)or(Y>Height)or(Y<0) then
+  begin
     DADCancelMoving;
     Exit;
-end;
+  end;
 
   ActualField:=GetFieldIJ(X,Y);
 
-  if (PointsEqual(ActualField,DAD.DADCordsIJ)) then
+  if (PointsEqual(ActualField,DAD.FromCordsIJ)) then
   begin
     DADCancelMoving;
     Exit;
@@ -272,12 +272,12 @@ end;
   else
   begin
     ColorMove.color:=true;
-    ColorMove.from:=DAD.DADCordsIJ;
+    ColorMove.from:=DAD.FromCordsIJ;
     ColorMove.too:=ActualField;
-    Move(GetFieldName(DAD.DADCordsIJ),GetFieldName(ActualField));
+    Move(GetFieldName(DAD.FromCordsIJ),GetFieldName(ActualField));
   end;
 
-DAD.DAD:=False;
+DAD.active:=False;
 
 end;
 
