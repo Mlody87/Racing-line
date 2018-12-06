@@ -7,10 +7,6 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls, BGRABitmap, BGRASVG, BGRABitmapTypes,typinfo;
 
-const
-  START_WHITE_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
-  START_BLACK_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook');
-
 type
 
   TPieces = (Pawn, Rook, Knight, Bishop, Queen, King);
@@ -48,6 +44,22 @@ type
     from:TPoint;
     too:TPoint;
   end;
+  
+  CONST
+  CBoard : TBoardDesc =
+  (
+  ('A8','B8','C8','D8','E8','F8','G8','H8'),
+  ('A7','B7','C7','D7','E7','F7','G7','H7'),
+  ('A6','B6','C6','D6','E6','F6','G6','H6'),
+  ('A5','B5','C5','D5','E5','F5','G5','H5'),
+  ('A4','B4','C4','D4','E4','F4','G4','H4'),
+  ('A3','B3','C3','D3','E3','F3','G3','H3'),
+  ('A2','B2','C2','D2','E2','F2','G2','H2'),
+  ('A1','B1','C1','D1','E1','F1','G1','H1')
+  );
+  
+  START_WHITE_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
+  START_BLACK_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook');
 
   TBoard = class(TPaintBox)
   private
@@ -528,15 +540,7 @@ begin
 
 FBottomColor := 'white';
 DAD.active := false;
-
-BoardDesc[0,0]:='A8';BoardDesc[1,0]:='B8';BoardDesc[2,0]:='C8';BoardDesc[3,0]:='D8';BoardDesc[4,0]:='E8';BoardDesc[5,0]:='F8';BoardDesc[6,0]:='G8';BoardDesc[7,0]:='H8';
-BoardDesc[0,1]:='A7';BoardDesc[1,1]:='B7';BoardDesc[2,1]:='C7';BoardDesc[3,1]:='D7';BoardDesc[4,1]:='E7';BoardDesc[5,1]:='F7';BoardDesc[6,1]:='G7';BoardDesc[7,1]:='H7';
-BoardDesc[0,2]:='A6';BoardDesc[1,2]:='B6';BoardDesc[2,2]:='C6';BoardDesc[3,2]:='D6';BoardDesc[4,2]:='E6';BoardDesc[5,2]:='F6';BoardDesc[6,2]:='G6';BoardDesc[7,2]:='H6';
-BoardDesc[0,3]:='A5';BoardDesc[1,3]:='B5';BoardDesc[2,3]:='C5';BoardDesc[3,3]:='D5';BoardDesc[4,3]:='E5';BoardDesc[5,3]:='F5';BoardDesc[6,3]:='G5';BoardDesc[7,3]:='H5';
-BoardDesc[0,4]:='A4';BoardDesc[1,4]:='B4';BoardDesc[2,4]:='C4';BoardDesc[3,4]:='D4';BoardDesc[4,4]:='E4';BoardDesc[5,4]:='F4';BoardDesc[6,4]:='G4';BoardDesc[7,4]:='H4';
-BoardDesc[0,5]:='A3';BoardDesc[1,5]:='B3';BoardDesc[2,5]:='C3';BoardDesc[3,5]:='D3';BoardDesc[4,5]:='E3';BoardDesc[5,5]:='F3';BoardDesc[6,5]:='G3';BoardDesc[7,5]:='H3';
-BoardDesc[0,6]:='A2';BoardDesc[1,6]:='B2';BoardDesc[2,6]:='C2';BoardDesc[3,6]:='D2';BoardDesc[4,6]:='E2';BoardDesc[5,6]:='F2';BoardDesc[6,6]:='G2';BoardDesc[7,6]:='H2';
-BoardDesc[0,7]:='A1';BoardDesc[1,7]:='B1';BoardDesc[2,7]:='C1';BoardDesc[3,7]:='D1';BoardDesc[4,7]:='E1';BoardDesc[5,7]:='F1';BoardDesc[6,7]:='G1';BoardDesc[7,7]:='H1';
+BoardDesc:=CBoard;
 
 end;
 
