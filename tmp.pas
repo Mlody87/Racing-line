@@ -105,3 +105,10 @@ end;
 end.
 
 
+
+
+procedure TForm1.BGRAVirtualScreen1Redraw(Sender: TObject; Bitmap: TBGRABitmap);
+begin
+  Bitmap.Rectangle(x, y, x2, y2, BGRA(0,0,0,alpha), dmDrawWithTransparency);
+end;
+
