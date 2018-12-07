@@ -53,6 +53,8 @@ type
 
   TPiecesImages = array[0..5] of TPieceImage;
 
+  TLegalMoves = array of TPoint;
+
   TBoardDesc = array[0..7,0..7] of string;
   TBoardPieces = array[0..7,0..7] of ^TPiece;
 
@@ -71,6 +73,7 @@ type
     Board:TBoardPieces;
     WhiteImages,BlackImages:TPiecesImages;
     DAD:TDAD;
+    LegalMoves:TLegalMoves;
   protected
     { Protected declarations }
     BoardDesc : TBoardDesc;
@@ -101,6 +104,19 @@ type
     function CalculateFieldPos(point:TPoint):TRect;
     procedure LoadPiecesImages();
     procedure SetPiecesSize();
+
+    procedure GetLegalMoves(field:TPoint);
+    procedure PawnMoves(field:TPoint);
+    procedure RookMoves(field:TPoint);
+    procedure KnightMoves(field:TPoint);
+    procedure BishopMoves(field:TPoint);
+    procedure QueenMoves(field:TPoint);
+    procedure KingMoves(field:TPoint);
+
+    procedure CheckMove(field:TPoint;stepX:integer;stepY:integer);
+    procedure AddLegalMove(point:TPoint);
+    procedure ClearLegalMoves;
+    procedure DrawLegalMoves;
   public
     { Public declarations }
     constructor Create(AOwner : TComponent); override;
@@ -174,6 +190,7 @@ procedure TBoard.DADCancelMoving();
 begin
   DAD.active:=false;
   Board[DAD.FromCordsIJ.x,DAD.FromCordsIJ.y]^.DAD:=false;
+  ClearLegalMoves;
   Self.Repaint;
 end;
 
@@ -225,24 +242,26 @@ end;
 
 procedure TBoard.MouseDown(Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 var
-test:TPoint;
+ActualIJ:TPoint;
 begin
   inherited;
 
-  test:=GetFieldIJ(X,Y);
+  ActualIJ:=GetFieldIJ(X,Y);
 
-  if Board[test.X,test.Y]=nil then
+  if Board[ActualIJ.X,ActualIJ.Y]=nil then
     Exit;
 
   DAD.active:=true;
 
-  DAD.FromCordsIJ:=test;
+  DAD.FromCordsIJ:=ActualIJ;
 
   DAD.ActualCordsXY:=GetFieldXY(X,Y);
 
   DAD.BoardPoint:=Point(X,Y);
 
   Board[DAD.FromCordsIJ.x,DAD.FromCordsIJ.y]^.DAD:=true;
+
+  GetLegalMoves(ActualIJ);
 
 end;
 
@@ -293,6 +312,7 @@ begin
     Move(GetFieldName(DAD.FromCordsIJ),GetFieldName(ActualField));
   end;
 
+  ClearLegalMoves;
 end;
 
 end;
@@ -375,6 +395,8 @@ begin
   Canvas.rectangle(field);
 end;
 
+DrawLines();
+
 end;
 
 procedure TBoard.GenerateBitmapBoard();
@@ -422,8 +444,6 @@ for j:=0 to 7 do
 
       end;
    end;
-
-DrawLines();
 
 end;
 
@@ -545,6 +565,7 @@ end;
 procedure TBoard.SetVariables();
 begin
 
+SetLength(LegalMoves, 0);
 FBottomColor := 'white';
 DAD.active := false;
 BoardDesc:=CBoard;
@@ -636,7 +657,132 @@ begin
 
 CheckResize();
 DrawBoard();
+DrawLegalMoves;
 DrawPosition();
+
+end;
+
+procedure TBoard.GetLegalMoves(field:TPoint);
+begin
+
+if Board[field.x,field.y]^.Piece = Pawn then PawnMoves(field);
+if Board[field.x,field.y]^.Piece = Rook then  RookMoves(field);
+if Board[field.x,field.y]^.Piece = Knight then KnightMoves(field);
+if Board[field.x,field.y]^.Piece = Bishop then BishopMoves(field);
+if Board[field.x,field.y]^.Piece = Queen then QueenMoves(field);
+if Board[field.x,field.y]^.Piece = King then KingMoves(field);
+end;
+
+procedure TBoard.PawnMoves(field:TPoint);
+begin
+
+end;
+
+procedure TBoard.RookMoves(field:TPoint);
+begin
+  CheckMove(field,1,0);
+  CheckMove(field,-1,0);
+  CheckMove(field,0,1);
+  CheckMove(field,0,-1);
+end;
+
+procedure TBoard.KnightMoves(field:TPoint);
+begin
+
+end;
+
+procedure TBoard.BishopMoves(field:TPoint);
+begin
+  CheckMove(field,1,1);
+  CheckMove(field,-1,-1);
+  CheckMove(field,-1,1);
+  CheckMove(field,1,-1);
+end;
+
+procedure TBoard.QueenMoves(field:TPoint);
+begin
+CheckMove(field,1,0);
+CheckMove(field,-1,0);
+CheckMove(field,0,1);
+CheckMove(field,0,-1);
+CheckMove(field,1,1);
+CheckMove(field,-1,-1);
+CheckMove(field,-1,1);
+CheckMove(field,1,-1);
+end;
+
+procedure TBoard.KingMoves(field:TPoint);
+begin
+
+end;
+
+procedure TBoard.AddLegalMove(point:TPoint);
+begin
+SetLength(LegalMoves, Length(LegalMoves)+1);
+LegalMoves[High(LegalMoves)]:=point;
+end;
+
+procedure TBoard.CheckMove(field:TPoint;stepX:integer;stepY:integer);
+var
+x,y:integer;
+begin
+x:=field.x;
+y:=field.y;
+
+x:=x+stepX;
+y:=y+stepY;
+
+while ((x>=0) and (x<=7) and (y>=0) and (y<=7)) do
+  begin
+
+  if Board[x,y]=nil then
+    begin
+    AddLegalMove(Point(x,y));
+    end
+  else
+    begin
+      if Board[x,y]^.Color<>Board[field.x,field.y]^.Color then begin AddLegalMove(Point(x,y)); Break; end;
+      if Board[x,y]^.Color=Board[field.x,field.y]^.Color then Break;
+    end;
+
+  x:=x+stepX;
+  y:=y+stepY;
+
+  end;
+
+end;
+
+
+procedure TBoard.ClearLegalMoves;
+begin
+  SetLength(LegalMoves,0);
+end;
+
+
+procedure TBoard.DrawLegalMoves;
+var
+i,CentreX,CentreY,Radius:integer;
+field:TRect;
+begin
+
+Radius:=Round(FieldSize div 5);
+
+for i:=0 to Length(LegalMoves)-1 do
+begin
+  {Canvas.Pen.Color := clWhite;
+  Canvas.brush.Color := TColor($0036bab9);
+
+  field:=CalculateFieldPos(LegalMoves[i]);
+  Canvas.rectangle(field); }
+
+
+  Canvas.pen.Color := clLtGray;
+  Canvas.brush.Color := clLtGray;
+  CentreX := LegalMoves[i].x*FieldSize() + round(FieldSize() div 2);
+  CentreY := LegalMoves[i].y*FieldSize() + round(FieldSize() div 2);
+  Canvas.ellipse(CentreX - Radius, CentreY - Radius,  CentreX + Radius, CentreY + Radius);
+
+end;
 
 end;
 
