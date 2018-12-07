@@ -521,7 +521,7 @@ FSize:integer;
 begin
 FSize:=FieldSize();
 
-//load white images
+//white images
 for i:=0 to 5 do
 begin
   tmp:=GetEnumName(TypeInfo(TPieces),i);
@@ -529,7 +529,7 @@ begin
   WhiteImages[i].svg.StretchDraw(WhiteImages[i].bmp.Canvas2D, taCenter, tlCenter, 0,0,FSize,FSize);
 end;
 
-//load black images
+//black images
 for i:=0 to 5 do
 begin
   tmp:=GetEnumName(TypeInfo(TPieces),i);
