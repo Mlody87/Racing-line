@@ -799,12 +799,6 @@ Radius:=Round(FieldSize div 5);
 
 for i:=0 to Length(LegalMoves)-1 do
 begin
-  {Canvas.Pen.Color := clWhite;
-  Canvas.brush.Color := TColor($0036bab9);
-
-  field:=CalculateFieldPos(LegalMoves[i]);
-  Canvas.rectangle(field); }
-
 
   Canvas.pen.Color := clLtGray;
   Canvas.brush.Color := clLtGray;
