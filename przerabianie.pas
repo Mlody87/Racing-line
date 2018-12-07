@@ -25,6 +25,8 @@ CBoard : array[0..7,0..7] of string =
 START_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
 //START_BLACK_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook');
 
+KNIGHT_MOVES : array[0..7] of TPoint = ((1,2),(2,1),(2,-1),(1,-2),(-1,-2),(-2,-1),(-2,1),(-1,2));
+
 type
 
   TPieces = (Pawn, Rook, Knight, Bishop, Queen, King);
