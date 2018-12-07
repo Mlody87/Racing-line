@@ -24,7 +24,7 @@ CBoard : array[0..7,0..7] of string =
 
 START_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
 
-KNIGHT_MOVES : array[0..7] of TPoint = ((1,2),(2,1),(2,-1),(1,-2),(-1,-2),(-2,-1),(-2,1),(-1,2));
+KNIGHT_MOVES : array[0..7] of TPoint = ((X:1;Y:2),(X:2;Y:1),(X:2;Y:-1),(X:1;Y:-2),(X:-1;Y:-2),(X:-2;Y:-1),(X:-2;Y:1),(X:-1;Y:2));
 
 type
 
@@ -114,6 +114,7 @@ type
     procedure QueenMoves(field:TPoint);
     procedure KingMoves(field:TPoint);
     procedure CheckKnightMoves(field:TPoint);
+    procedure ColorPawnMoves(field:TPoint;STEP:integer);
 
     procedure CheckMoves(field:TPoint;stepX:integer;stepY:integer);
     procedure AddLegalMove(point:TPoint);
@@ -217,6 +218,8 @@ ToIJ:=GetIJByName(Too);
 AssignField(FromIJ,ToIJ);
 
 ClearField(FromIJ);
+
+Board[ToIJ.X,ToIJ.Y]^.MoveCount:=Board[ToIJ.X,ToIJ.Y]^.MoveCount+1;
 
 Self.Invalidate;
 
@@ -397,8 +400,6 @@ begin
   Canvas.rectangle(field);
 end;
 
-DrawLines();
-
 end;
 
 procedure TBoard.GenerateBitmapBoard();
@@ -446,6 +447,8 @@ for j:=0 to 7 do
 
       end;
    end;
+
+DrawLines();
 
 end;
 
@@ -568,7 +571,7 @@ procedure TBoard.SetVariables();
 begin
 
 SetLength(LegalMoves, 0);
-FBottomColor := 'white';
+FBottomColor := 'White';
 DAD.active := false;
 BoardDesc:=CBoard;
 
@@ -675,8 +678,52 @@ if Board[field.x,field.y]^.Piece = Queen then QueenMoves(field);
 if Board[field.x,field.y]^.Piece = King then KingMoves(field);
 end;
 
-procedure TBoard.PawnMoves(field:TPoint);
+
+procedure TBoard.ColorPawnMoves(field:TPoint;STEP:integer);
 begin
+if (field.x-1>=0) and (Board[field.x-1,field.y+STEP]<>nil) then
+  begin
+     if (Board[field.x-1,field.y+STEP]^.Color<>Board[field.x,field.y]^.Color) then
+       AddLegalMove(Point(field.x-1,field.y+STEP));
+  end;
+
+if (field.x+1<=7) and (Board[field.x+1,field.y+STEP]<>nil) then
+  begin
+     if (Board[field.x+1,field.y+STEP]^.Color<>Board[field.x,field.y]^.Color) then
+       AddLegalMove(Point(field.x+1,field.y+STEP));
+  end;
+
+if Board[field.x,field.y+STEP]=nil then
+begin
+  AddLegalMove(Point(field.x,field.y+STEP));
+end
+else
+begin
+  Exit;
+end;
+
+if Board[field.x,field.y]^.MoveCount=0 then
+  begin
+    if (Board[field.x,field.y+(STEP*2)]=nil) then AddLegalMove(Point(field.x,field.y+(STEP*2)));
+  end;
+
+end;
+
+procedure TBoard.PawnMoves(field:TPoint);
+var
+tmpcol:string;
+begin
+
+  WriteStr(tmpcol, Board[field.x,field.y]^.Color);
+
+  if (tmpcol=FBottomColor) then
+    begin
+      ColorPawnMoves(field,-1);
+    end
+    else
+    begin
+      ColorPawnMoves(field,+1);
+    end;
 
 end;
 
@@ -731,13 +778,13 @@ begin
 
 for i:=0 to 7 do
 begin
-  x:=field.x+KNIGHT_MOVES[i];
-  y:=field.y+KNIGHT_MOVES[i];
-  
+  x:=field.x+KNIGHT_MOVES[i].x;
+  y:=field.y+KNIGHT_MOVES[i].y;
+
   if  ((x>=0) and (x<=7) and (y>=0) and (y<=7)) then
   begin
-    
-    if Board[x,y]=nil then 
+
+    if Board[x,y]=nil then
     begin
       AddLegalMove(Point(x,y));
     end
@@ -745,7 +792,7 @@ begin
     begin
       if Board[x,y]^.Color<>Board[field.x,field.y]^.Color then begin AddLegalMove(Point(x,y)); end;
     end;
-    
+
   end;
 end;
 
@@ -794,26 +841,29 @@ i,CentreX,CentreY,Radius:integer;
 field:TRect;
 begin
 
-Radius:=Round(FieldSize div 5);
+Radius:=Round(FieldSize div 6);
 
 for i:=0 to Length(LegalMoves)-1 do
 begin
 
   if Board[LegalMoves[i].x, LegalMoves[i].y]<>nil then
   begin
-    field:=CalculateFieldPos(LegalMoves[i].x,LegalMoves[i].y);
+    field:=CalculateFieldPos(LegalMoves[i]);
 
-    Canvas.Pen.Color := clLtGray;
-    Canvas.Pen.Style := bsSolid;
-    Canvas.FrameRect(field);
+    Canvas.Brush.Color:=clLtGray;
+    Canvas.Brush.Style:=bsDiagCross;
+    Canvas.Rectangle(field);
+    Canvas.Brush.Style:=bsClear;
   end
   else
   begin
     Canvas.pen.Color := clLtGray;
     Canvas.brush.Color := clLtGray;
+    Canvas.Pen.Width:=0;
     CentreX := LegalMoves[i].x*FieldSize() + round(FieldSize() div 2);
     CentreY := LegalMoves[i].y*FieldSize() + round(FieldSize() div 2);
     Canvas.ellipse(CentreX - Radius, CentreY - Radius,  CentreX + Radius, CentreY + Radius);
+    Canvas.Pen.Width:=1;
   end;
 end;
 
