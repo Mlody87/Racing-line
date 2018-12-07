@@ -23,7 +23,6 @@ CBoard : array[0..7,0..7] of string =
 );
 
 START_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook');
-//START_BLACK_PIECES : array[0..8] of string = ('Pawn', 'Rook', 'Knight', 'Bishop', 'King', 'Queen', 'Bishop', 'Knight', 'Rook');
 
 KNIGHT_MOVES : array[0..7] of TPoint = ((1,2),(2,1),(2,-1),(1,-2),(-1,-2),(-2,-1),(-2,1),(-1,2));
 
@@ -800,12 +799,22 @@ Radius:=Round(FieldSize div 5);
 for i:=0 to Length(LegalMoves)-1 do
 begin
 
-  Canvas.pen.Color := clLtGray;
-  Canvas.brush.Color := clLtGray;
-  CentreX := LegalMoves[i].x*FieldSize() + round(FieldSize() div 2);
-  CentreY := LegalMoves[i].y*FieldSize() + round(FieldSize() div 2);
-  Canvas.ellipse(CentreX - Radius, CentreY - Radius,  CentreX + Radius, CentreY + Radius);
+  if Board[LegalMoves[i].x, LegalMoves[i].y]<>nil then
+  begin
+    field:=CalculateFieldPos(LegalMoves[i].x,LegalMoves[i].y);
 
+    Canvas.Pen.Color := clLtGray;
+    Canvas.Pen.Style := bsSolid;
+    Canvas.FrameRect(field);
+  end
+  else
+  begin
+    Canvas.pen.Color := clLtGray;
+    Canvas.brush.Color := clLtGray;
+    CentreX := LegalMoves[i].x*FieldSize() + round(FieldSize() div 2);
+    CentreY := LegalMoves[i].y*FieldSize() + round(FieldSize() div 2);
+    Canvas.ellipse(CentreX - Radius, CentreY - Radius,  CentreX + Radius, CentreY + Radius);
+  end;
 end;
 
 end;
