@@ -727,12 +727,27 @@ end;
 
 procedure TBoard.CheckKnightMoves(field:TPoint);
 var
-i:integer;
+i,x,y:integer;
 begin
 
 for i:=0 to 7 do
 begin
+  x:=field.x+KNIGHT_MOVES[i];
+  y:=field.y+KNIGHT_MOVES[i];
   
+  if  ((x>=0) and (x<=7) and (y>=0) and (y<=7)) then
+  begin
+    
+    if Board[x,y]=nil then 
+    begin
+      AddLegalMove(Point(x,y));
+    end
+    else
+    begin
+      if Board[x,y]^.Color<>Board[field.x,field.y]^.Color then begin AddLegalMove(Point(x,y)); end;
+    end;
+    
+  end;
 end;
 
 end;
