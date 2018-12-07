@@ -114,8 +114,9 @@ type
     procedure BishopMoves(field:TPoint);
     procedure QueenMoves(field:TPoint);
     procedure KingMoves(field:TPoint);
+    procedure CheckKnightMoves(field:TPoint);
 
-    procedure CheckMove(field:TPoint;stepX:integer;stepY:integer);
+    procedure CheckMoves(field:TPoint;stepX:integer;stepY:integer);
     procedure AddLegalMove(point:TPoint);
     procedure ClearLegalMoves;
     procedure DrawLegalMoves;
@@ -682,35 +683,35 @@ end;
 
 procedure TBoard.RookMoves(field:TPoint);
 begin
-  CheckMove(field,1,0);
-  CheckMove(field,-1,0);
-  CheckMove(field,0,1);
-  CheckMove(field,0,-1);
+  CheckMoves(field,1,0);
+  CheckMoves(field,-1,0);
+  CheckMoves(field,0,1);
+  CheckMoves(field,0,-1);
 end;
 
 procedure TBoard.KnightMoves(field:TPoint);
 begin
-
+  CheckKnightMoves(field);
 end;
 
 procedure TBoard.BishopMoves(field:TPoint);
 begin
-  CheckMove(field,1,1);
-  CheckMove(field,-1,-1);
-  CheckMove(field,-1,1);
-  CheckMove(field,1,-1);
+  CheckMoves(field,1,1);
+  CheckMoves(field,-1,-1);
+  CheckMoves(field,-1,1);
+  CheckMoves(field,1,-1);
 end;
 
 procedure TBoard.QueenMoves(field:TPoint);
 begin
-CheckMove(field,1,0);
-CheckMove(field,-1,0);
-CheckMove(field,0,1);
-CheckMove(field,0,-1);
-CheckMove(field,1,1);
-CheckMove(field,-1,-1);
-CheckMove(field,-1,1);
-CheckMove(field,1,-1);
+CheckMoves(field,1,0);
+CheckMoves(field,-1,0);
+CheckMoves(field,0,1);
+CheckMoves(field,0,-1);
+CheckMoves(field,1,1);
+CheckMoves(field,-1,-1);
+CheckMoves(field,-1,1);
+CheckMoves(field,1,-1);
 end;
 
 procedure TBoard.KingMoves(field:TPoint);
@@ -724,7 +725,19 @@ SetLength(LegalMoves, Length(LegalMoves)+1);
 LegalMoves[High(LegalMoves)]:=point;
 end;
 
-procedure TBoard.CheckMove(field:TPoint;stepX:integer;stepY:integer);
+procedure TBoard.CheckKnightMoves(field:TPoint);
+var
+i:integer;
+begin
+
+for i:=0 to 7 do
+begin
+  
+end;
+
+end;
+
+procedure TBoard.CheckMoves(field:TPoint;stepX:integer;stepY:integer);
 var
 x,y:integer;
 begin
