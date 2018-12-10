@@ -773,7 +773,7 @@ begin
         if (Board[x, field.y]^.Piece<>Rook) or (Board[x, field.y]^.Color=Board[field.x, field.y]^.Color) or (Board[x, field.y]^.MoveCount<>0) then
         begin
           Result:=false;
-          Exit;;
+          Exit;
         end;
       
       end
@@ -806,6 +806,10 @@ CheckMoves(field,-1,1,1);
 CheckMoves(field,1,-1,1);
 CheckMoves(field,0,-1,1);
 CheckMoves(field,-1,-1,1);
+
+
+
+
 
 if (CanCastle(field,1)=false)or CanCastle(field,-1); then 
 begin
