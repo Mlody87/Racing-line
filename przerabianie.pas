@@ -751,6 +751,20 @@ begin
   CheckMoves(field,1,-1;7-field.x);
 end;
 
+function TBoard.CanCastle(field:TPoint;step:integer):boolean;
+begin
+
+if (Board[field.x,field.y].MoveCount=0) then
+begin
+
+end;
+
+  if (and (Board[7,7]<>nil) and (Board[7,7].Piece=Rook) and (Board[7,7].MoveCount=0) then) then
+  begin
+   
+  end;
+end;
+
 procedure TBoard.KingMoves(field:TPoint);
 begin
 
@@ -762,12 +776,10 @@ CheckMoves(field,1,-1,1);
 CheckMoves(field,0,-1,1);
 CheckMoves(field,-1,-1,1);
 
-if (Board[field.x,field.y].MoveCount=0) then
+if (CanCastle(field,1)=false)or CanCastle(field,-1); then 
 begin
 
 //if the King has not yet made a move then check the option of castling
-
-  
 
 end
 else
