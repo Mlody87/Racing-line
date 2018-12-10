@@ -88,7 +88,6 @@ type
     procedure BoardRotationPieces;
     function FieldSize():integer;
     procedure DrawBoard();
-    procedure DrawLines();
     procedure DrawPosition();
     procedure SetStartPosition();
     procedure SetVariables();
@@ -115,8 +114,9 @@ type
     procedure KingMoves(field:TPoint);
     procedure CheckKnightMoves(field:TPoint);
     procedure ColorPawnMoves(field:TPoint;STEP:integer);
+    function CanCastle(field:TPoint;STEP:integer):boolean;
 
-    procedure CheckMoves(field:TPoint;stepX:integer;stepY:integer);
+    procedure CheckMoves(field:TPoint;stepX:integer;stepY:integer;range:integer);
     procedure AddLegalMove(point:TPoint);
     procedure ClearLegalMoves;
     procedure DrawLegalMoves;
@@ -448,14 +448,6 @@ for j:=0 to 7 do
       end;
    end;
 
-DrawLines();
-
-end;
-
-
-procedure TBoard.DrawLines();
-begin
-
 BitmapBoard.Canvas.Pen.Color := clBlack;
 
 BitmapBoard.Canvas.Line(0,0,Width-1,0);
@@ -729,10 +721,10 @@ end;
 
 procedure TBoard.RookMoves(field:TPoint);
 begin
-  CheckMoves(field,1,0);
-  CheckMoves(field,-1,0);
-  CheckMoves(field,0,1);
-  CheckMoves(field,0,-1);
+  CheckMoves(field,1,0,7-field.x);
+  CheckMoves(field,-1,0,field.x);
+  CheckMoves(field,0,1,7-field.y);
+  CheckMoves(field,0,-1,field.y);
 end;
 
 procedure TBoard.KnightMoves(field:TPoint);
@@ -742,29 +734,104 @@ end;
 
 procedure TBoard.BishopMoves(field:TPoint);
 begin
-  CheckMoves(field,1,1);
-  CheckMoves(field,-1,-1);
-  CheckMoves(field,-1,1);
-  CheckMoves(field,1,-1);
+  CheckMoves(field,1,1,7-field.x);
+  CheckMoves(field,-1,-1,field.x);
+  CheckMoves(field,-1,1,field.x);
+  CheckMoves(field,1,-1,7-field.x);
 end;
 
 procedure TBoard.QueenMoves(field:TPoint);
 begin
-CheckMoves(field,1,0);
-CheckMoves(field,-1,0);
-CheckMoves(field,0,1);
-CheckMoves(field,0,-1);
-CheckMoves(field,1,1);
-CheckMoves(field,-1,-1);
-CheckMoves(field,-1,1);
-CheckMoves(field,1,-1);
+  CheckMoves(field,1,0,7-field.x);
+  CheckMoves(field,-1,0,field.x);
+  CheckMoves(field,0,1,7-field.y);
+  CheckMoves(field,0,-1,field.y);
+  CheckMoves(field,1,1,7-field.x);
+  CheckMoves(field,-1,-1,field.x);
+  CheckMoves(field,-1,1,field.x);
+  CheckMoves(field,1,-1,7-field.x);
+end;
+
+function TBoard.CanCastle(field:TPoint;STEP:integer):boolean;
+var
+i,x:integer;
+begin
+Result:=true;
+x:=field.x+STEP;
+
+if Board[field.x,field.y]^.MoveCount=0 then
+begin
+
+  while (x<=7) and (x>=0) do
+  begin
+
+    if Board[x, field.y]<>nil then
+    begin
+
+      if (x=7) or (x=0) then
+      begin
+
+        if (Board[x, field.y]^.Piece<>Rook) or (Board[x, field.y]^.Color<>Board[field.x, field.y]^.Color) or (Board[x, field.y]^.MoveCount<>0) then
+        begin
+          Result:=false;
+          Exit;
+        end;
+
+      end
+      else
+      begin
+        Result:=false;
+        Exit;
+      end;
+
+    end;
+
+    x:=x+STEP;
+  end;
+
+end
+else
+begin
+Result:=false;
+end;
+
 end;
 
 procedure TBoard.KingMoves(field:TPoint);
 var
-i:integer;
+castle:boolean;
+begin
+castle:=false;
+
+CheckMoves(field,0,1,1);
+CheckMoves(field,1,1,1);
+CheckMoves(field,-1,1,1);
+CheckMoves(field,1,-1,1);
+CheckMoves(field,0,-1,1);
+CheckMoves(field,-1,-1,1);
+
+if (CanCastle(field,1)) then
+  begin
+  AddLegalMove(Point(Field.x+1,field.y));
+  AddLegalMove(Point(Field.x+2,field.y));
+  castle:=true;
+  end;
+
+if (CanCastle(field,-1)) then
+  begin
+  AddLegalMove(Point(Field.x-1,field.y));
+  AddLegalMove(Point(Field.x-2,field.y));
+  castle:=true;
+  end;
+
+if (castle=false) then
 begin
 
+//If the king has already made a move then just check legal moves horizontaly
+CheckMoves(field,1,0,1);
+CheckMoves(field,-1,0,1);
+
+end;
 
 end;
 
@@ -801,17 +868,15 @@ end;
 
 end;
 
-procedure TBoard.CheckMoves(field:TPoint;stepX:integer;stepY:integer);
+procedure TBoard.CheckMoves(field:TPoint;stepX:integer;stepY:integer;range:integer);
 var
 x,y:integer;
 begin
-x:=field.x;
-y:=field.y;
 
-x:=x+stepX;
-y:=y+stepY;
+x:=field.x+stepX;
+y:=field.y+stepY;
 
-while ((x>=0) and (x<=7) and (y>=0) and (y<=7)) do
+while range>0 do
   begin
 
   if Board[x,y]=nil then
@@ -827,6 +892,7 @@ while ((x>=0) and (x<=7) and (y>=0) and (y<=7)) do
   x:=x+stepX;
   y:=y+stepY;
 
+  range:=range-1;
   end;
 
 end;
