@@ -116,7 +116,7 @@ type
     procedure CheckKnightMoves(field:TPoint);
     procedure ColorPawnMoves(field:TPoint;STEP:integer);
 
-    procedure CheckMoves(field:TPoint;stepX:integer;stepY:integer);
+    procedure CheckMoves(field:TPoint;stepX:integer;stepY:integer;range:integer);
     procedure AddLegalMove(point:TPoint);
     procedure ClearLegalMoves;
     procedure DrawLegalMoves;
@@ -729,10 +729,10 @@ end;
 
 procedure TBoard.RookMoves(field:TPoint);
 begin
-  CheckMoves(field,1,0);
-  CheckMoves(field,-1,0);
-  CheckMoves(field,0,1);
-  CheckMoves(field,0,-1);
+  CheckMoves(field,1,0;7-field.x);
+  CheckMoves(field,-1,0;field.x);
+  CheckMoves(field,0,1;7-field.y);
+  CheckMoves(field,0,-1;field.y);
 end;
 
 procedure TBoard.KnightMoves(field:TPoint);
@@ -742,28 +742,35 @@ end;
 
 procedure TBoard.BishopMoves(field:TPoint);
 begin
-  CheckMoves(field,1,1);
-  CheckMoves(field,-1,-1);
-  CheckMoves(field,-1,1);
-  CheckMoves(field,1,-1);
+  CheckMoves(field,1,1;7-field.x);
+  CheckMoves(field,-1,-1;field.x);
+  CheckMoves(field,-1,1;field.x);
+  CheckMoves(field,1,-1;7-field.x);
 end;
 
 procedure TBoard.QueenMoves(field:TPoint);
 begin
-CheckMoves(field,1,0);
-CheckMoves(field,-1,0);
-CheckMoves(field,0,1);
-CheckMoves(field,0,-1);
-CheckMoves(field,1,1);
-CheckMoves(field,-1,-1);
-CheckMoves(field,-1,1);
-CheckMoves(field,1,-1);
+  CheckMoves(field,1,0;7-field.x);
+  CheckMoves(field,-1,0;field.x);
+  CheckMoves(field,0,1;7-field.y);
+  CheckMoves(field,0,-1;field.y);
+  CheckMoves(field,1,1;7-field.x);
+  CheckMoves(field,-1,-1;field.x);
+  CheckMoves(field,-1,1;field.x);
+  CheckMoves(field,1,-1;7-field.x);
 end;
 
 procedure TBoard.KingMoves(field:TPoint);
-var
-i:integer;
 begin
+
+CheckMoves(field,1,0,1);
+CheckMoves(field,0,1,1);
+CheckMoves(field,1,1,1);
+CheckMoves(field,-1,1,1);
+CheckMoves(field,1,-1,1);
+CheckMoves(field,-1,0,1);
+CheckMoves(field,0,-1,1);
+CheckMoves(field,-1,-1,1);
 
 
 end;
@@ -801,17 +808,15 @@ end;
 
 end;
 
-procedure TBoard.CheckMoves(field:TPoint;stepX:integer;stepY:integer);
+procedure TBoard.CheckMoves(field:TPoint;stepX:integer;stepY:integer;range:integer);
 var
 x,y:integer;
 begin
-x:=field.x;
-y:=field.y;
 
-x:=x+stepX;
-y:=y+stepY;
+x:=field.x+stepX;
+y:=field.y+stepY;
 
-while ((x>=0) and (x<=7) and (y>=0) and (y<=7)) do
+while range>0 do
   begin
 
   if Board[x,y]=nil then
@@ -828,6 +833,8 @@ while ((x>=0) and (x<=7) and (y>=0) and (y<=7)) do
   y:=y+stepY;
 
   end;
+
+range:=range-1;
 
 end;
 
