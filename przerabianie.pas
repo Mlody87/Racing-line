@@ -88,7 +88,6 @@ type
     procedure BoardRotationPieces;
     function FieldSize():integer;
     procedure DrawBoard();
-    procedure DrawLines();
     procedure DrawPosition();
     procedure SetStartPosition();
     procedure SetVariables();
@@ -447,14 +446,6 @@ for j:=0 to 7 do
 
       end;
    end;
-
-DrawLines();
-
-end;
-
-
-procedure TBoard.DrawLines();
-begin
 
 BitmapBoard.Canvas.Pen.Color := clBlack;
 
