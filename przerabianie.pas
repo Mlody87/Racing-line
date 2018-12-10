@@ -761,7 +761,10 @@ CheckMoves(field,1,-1);
 end;
 
 procedure TBoard.KingMoves(field:TPoint);
+var
+i:integer;
 begin
+
 
 end;
 
