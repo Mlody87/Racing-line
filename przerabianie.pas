@@ -113,7 +113,7 @@ type
     procedure QueenMoves(field:TPoint);
     procedure KingMoves(field:TPoint);
     procedure CheckKnightMoves(field:TPoint);
-    procedure ColorPawnMoves(field:TPoint;STEP:integer);
+    procedure CheckPawnMoves(field:TPoint;STEP:integer);
     function CanCastle(field:TPoint;STEP:integer):boolean;
 
     procedure CheckMoves(field:TPoint;stepX:integer;stepY:integer;range:integer);
@@ -390,7 +390,7 @@ Canvas.Draw(0,0,BitmapBoard);
 
 if ColorMove.color then
 begin
-  Canvas.Pen.Color := clWhite;
+  Canvas.Pen.Color := clBlack;
   Canvas.brush.Color := TColor($0036bab9);
 
   field:=CalculateFieldPos(ColorMove.from);
@@ -671,7 +671,7 @@ if Board[field.x,field.y]^.Piece = King then KingMoves(field);
 end;
 
 
-procedure TBoard.ColorPawnMoves(field:TPoint;STEP:integer);
+procedure TBoard.CheckPawnMoves(field:TPoint;STEP:integer);
 begin
 if (field.x-1>=0) and (Board[field.x-1,field.y+STEP]<>nil) then
   begin
@@ -710,11 +710,11 @@ begin
 
   if (tmpcol=FBottomColor) then
     begin
-      ColorPawnMoves(field,-1);
+      CheckPawnMoves(field,-1);
     end
     else
     begin
-      ColorPawnMoves(field,+1);
+      CheckPawnMoves(field,+1);
     end;
 
 end;
@@ -798,10 +798,7 @@ end;
 end;
 
 procedure TBoard.KingMoves(field:TPoint);
-var
-castle:boolean;
 begin
-castle:=false;
 
 CheckMoves(field,0,1,1);
 CheckMoves(field,1,1,1);
@@ -809,31 +806,21 @@ CheckMoves(field,-1,1,1);
 CheckMoves(field,1,-1,1);
 CheckMoves(field,0,-1,1);
 CheckMoves(field,-1,-1,1);
+CheckMoves(field,1,0,1);
+CheckMoves(field,-1,0,1);
 
 if (CanCastle(field,1)) then
   begin
-  AddLegalMove(Point(Field.x+1,field.y));
   AddLegalMove(Point(Field.x+2,field.y));
-  castle:=true;
   end;
 
 if (CanCastle(field,-1)) then
   begin
-  AddLegalMove(Point(Field.x-1,field.y));
   AddLegalMove(Point(Field.x-2,field.y));
-  castle:=true;
   end;
 
-if (castle=false) then
-begin
-
-//If the king has already made a move then just check legal moves horizontaly
-CheckMoves(field,1,0,1);
-CheckMoves(field,-1,0,1);
-
 end;
 
-end;
 
 procedure TBoard.AddLegalMove(point:TPoint);
 begin
