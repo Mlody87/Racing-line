@@ -797,8 +797,10 @@ end;
 end;
 
 procedure TBoard.KingMoves(field:TPoint);
+var
+castle:boolean;
 begin
-
+castle:=false;
 
 CheckMoves(field,0,1,1);
 CheckMoves(field,1,1,1);
@@ -807,17 +809,21 @@ CheckMoves(field,1,-1,1);
 CheckMoves(field,0,-1,1);
 CheckMoves(field,-1,-1,1);
 
+if (CanCastle(field,1)) then
+  begin
+  AddLegalMove(Point(Field.x+1,field.y));
+  AddLegalMove(Point(Field.x+2,field.y));  
+  castle:=true;
+  end;
+  
+if (CanCastle(field,-1)) then
+  begin
+  AddLegalMove(Point(Field.x-1,field.y));
+  AddLegalMove(Point(Field.x-2,field.y)); 
+  castle:=true;
+  end;
 
-
-
-
-if (CanCastle(field,1)=false)or CanCastle(field,-1); then 
-begin
-
-//if the King has not yet made a move then check the option of castling
-
-end
-else
+if (castle=false) then
 begin
 
 //If the king has already made a move then just check legal moves horizontaly
@@ -825,7 +831,6 @@ CheckMoves(field,1,0,1);
 CheckMoves(field,-1,0,1);
 
 end;
-
 
 end;
 
