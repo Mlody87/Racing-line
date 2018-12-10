@@ -754,14 +754,30 @@ end;
 procedure TBoard.KingMoves(field:TPoint);
 begin
 
-CheckMoves(field,1,0,1);
+
 CheckMoves(field,0,1,1);
 CheckMoves(field,1,1,1);
 CheckMoves(field,-1,1,1);
 CheckMoves(field,1,-1,1);
-CheckMoves(field,-1,0,1);
 CheckMoves(field,0,-1,1);
 CheckMoves(field,-1,-1,1);
+
+if (Board[field.x,field.y].MoveCount=0) then
+begin
+
+//if the King has not yet made a move then check the option of castling
+
+  
+
+end
+else
+begin
+
+//If the king has already made a move then just check legal moves horizontaly
+CheckMoves(field,1,0,1);
+CheckMoves(field,-1,0,1);
+
+end;
 
 
 end;
