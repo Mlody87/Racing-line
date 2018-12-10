@@ -751,18 +751,49 @@ begin
   CheckMoves(field,1,-1;7-field.x);
 end;
 
-function TBoard.CanCastle(field:TPoint;step:integer):boolean;
+function TBoard.CanCastle(field:TPoint;STEP:integer):boolean;
+var
+i,x:integer;
+begin
+Result:=true;
+x:=field.x+STEP;
+
+if Board[field.x,field.y]^.MoveCount=0 then
 begin
 
-if (Board[field.x,field.y].MoveCount=0) then
-begin
+  while (x<=7) or (x>=0) then
+  begin
+    
+    if Board[x, field.y]<>nil then
+    begin
+      
+      if (x=7) or (x=0) then
+      begin
+      
+        if (Board[x, field.y]^.Piece<>Rook) or (Board[x, field.y]^.Color=Board[field.x, field.y]^.Color) or (Board[x, field.y]^.MoveCount<>0) then
+        begin
+          Result:=false;
+          Exit;;
+        end;
+      
+      end
+      else
+      begin
+        Result:=false;
+        Exit;
+      end;
+    
+    end;
+    
+    x:=x+STEP;
+  end;
 
+end
+else
+begin
+Result:=false;
 end;
 
-  if (and (Board[7,7]<>nil) and (Board[7,7].Piece=Rook) and (Board[7,7].MoveCount=0) then) then
-  begin
-   
-  end;
 end;
 
 procedure TBoard.KingMoves(field:TPoint);
