@@ -33,23 +33,28 @@ type
   TPieceColor = (White, Black);
 
   TPiece = record
-  Piece:TPieces;
-  Color:TPieceColor;
-  MoveCount:integer;
-  DAD:boolean;
-  Tied:boolean;
+    Piece:TPieces;
+    Color:TPieceColor;
+    MoveCount:integer;
+    DAD:boolean;
+    Tied:boolean;
   end;
 
   TDAD = record
-  active:boolean;
-  FromCordsIJ:TPoint;
-  ActualCordsXY:TPoint;
-  BoardPoint:TPoint;
+    active:boolean;
+    FromCordsIJ:TPoint;
+    ActualCordsXY:TPoint;
+    BoardPoint:TPoint;
   end;
 
   TPieceImage = record
     svg:TBGRASVG;
     bmp:TBGRABitmap;
+  end;
+
+  TEnPassant = record
+    active:boolean;
+    Field:TPoint;
   end;
 
   TPiecesImages = array[0..5] of TPieceImage;
@@ -75,6 +80,7 @@ type
     WhiteImages,BlackImages:TPiecesImages;
     DAD:TDAD;
     LegalMoves:TLegalMoves;
+    EnPassant:TEnPassant;
   protected
     { Protected declarations }
     BoardDesc : TBoardDesc;
@@ -220,6 +226,14 @@ AssignField(FromIJ,ToIJ);
 ClearField(FromIJ);
 
 Board[ToIJ.X,ToIJ.Y]^.MoveCount:=Board[ToIJ.X,ToIJ.Y]^.MoveCount+1;
+
+EnPassant.active:=false;
+
+if (Board[ToIJ.X,ToIJ.Y]^.Piece=Pawn) and (Abs(FromIJ.Y-ToIJ.Y)=2) then
+begin
+     EnPassant.active:=true;
+     EnPassant.Field:=ToIJ;
+end;
 
 Self.Invalidate;
 
@@ -390,7 +404,7 @@ Canvas.Draw(0,0,BitmapBoard);
 
 if ColorMove.color then
 begin
-  Canvas.Pen.Color := clBlack;
+//  Canvas.Pen.Color := clBlack;
   Canvas.brush.Color := TColor($0036bab9);
 
   field:=CalculateFieldPos(ColorMove.from);
@@ -566,6 +580,7 @@ SetLength(LegalMoves, 0);
 FBottomColor := 'White';
 DAD.active := false;
 BoardDesc:=CBoard;
+EnPassant.active:=false;
 
 end;
 
@@ -685,19 +700,39 @@ if (field.x+1<=7) and (Board[field.x+1,field.y+STEP]<>nil) then
        AddLegalMove(Point(field.x+1,field.y+STEP));
   end;
 
-if Board[field.x,field.y+STEP]=nil then
-begin
-  AddLegalMove(Point(field.x,field.y+STEP));
-end
-else
-begin
-  Exit;
-end;
-
 if Board[field.x,field.y]^.MoveCount=0 then
   begin
     if (Board[field.x,field.y+(STEP*2)]=nil) then AddLegalMove(Point(field.x,field.y+(STEP*2)));
   end;
+
+//powtarza sie ponizej, do wydzielenia
+if (field.x-1>=0) and (Board[field.x-1,field.y]<>nil) then
+  begin
+    if (Board[field.x-1,field.y]^.Color<>Board[field.x,field.y]^.Color) and (Board[field.x-1,field.y]^.Piece=Pawn) then
+      begin
+        if (EnPassant.active=true) and (PointsEqual(Point(field.x-1,field.y),EnPassant.Field)) then
+          AddLegalMove(Point(field.x-1,field.y+(STEP)));
+      end;
+  end;
+
+if (field.x+1<=7) and (Board[field.x+1,field.y]<>nil) then
+  begin
+    if (Board[field.x+1,field.y]^.Color<>Board[field.x,field.y]^.Color) and (Board[field.x+1,field.y]^.Piece=Pawn) then
+      begin
+        if (EnPassant.active=true) and (PointsEqual(Point(field.x+1,field.y),EnPassant.Field)) then
+          AddLegalMove(Point(field.x+1,field.y+(STEP)));
+      end;
+  end;
+
+
+  if Board[field.x,field.y+STEP]=nil then
+begin
+  AddLegalMove(Point(field.x,field.y+STEP));
+end;
+//else
+//begin
+//  Exit;
+//end;
 
 end;
 
