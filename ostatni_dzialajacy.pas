@@ -235,6 +235,12 @@ begin
      EnPassant.Field:=ToIJ;
 end;
 
+if (Board[ToIJ.X,ToIJ.Y]^.Piece=King) and (Abs(FromIJ.X-ToIJ.X)=2) then
+begin
+  if (ToIJ.X=1) or (ToIJ.X=2) then Move(BoardDesc[0,ToIJ.Y], BoardDesc[ToIJ.X+1,ToIJ.Y]);
+  if (ToIJ.X=5) or (ToIJ.X=6) then Move(BoardDesc[7,ToIJ.Y], BoardDesc[ToIJ.X-1,ToIJ.Y]);
+end;
+
 Self.Invalidate;
 
 end;
